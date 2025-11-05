@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Page, UnitSystem } from '../types';
 import { BackIcon } from '../components/Icons';
@@ -20,7 +21,7 @@ const WeightInput: React.FC<{
 
     return (
         <div className="bg-light-gray dark:bg-dark-card p-4 rounded-xl">
-            <label className="text-sm font-semibold text-text-light dark:text-dark-text-light">{label}</label>
+            <label className="text-sm font-semibold text-text-light dark:text-dark-text-light font-montserrat">{label}</label>
             <div className="flex items-baseline mt-1">
                 <input 
                     type="number"
@@ -56,7 +57,7 @@ const WeightGoalsScreen: React.FC = () => {
                 <button onClick={() => navigateTo(Page.Settings)} className="p-2 -ml-2">
                     <BackIcon className="w-6 h-6 text-text-main dark:text-dark-text-main" />
                 </button>
-                <h1 className="text-xl font-bold text-text-main dark:text-dark-text-main mx-auto">Set Weight Goals</h1>
+                <h1 className="text-xl font-bold text-text-main dark:text-dark-text-main mx-auto font-montserrat">Set Weight Goals</h1>
                 <div className="w-6"></div>
             </header>
 

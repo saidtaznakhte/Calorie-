@@ -1,12 +1,20 @@
+
+
 import React from 'react';
-import { toYYYYMMDD, formatDate } from '../utils/dateUtils';
+import { toYYYYMMDD, formatDate, isToday as checkIsToday } from '../utils/dateUtils';
 
 interface DateSelectorProps {
   selectedDate: Date;
   onDateChange: (date: Date) => void;
+  /**
+   * Optional callback invoked when any day is clicked. If provided, this callback will be
+   * called instead of `onDateChange` when a day button is pressed.
+   * Useful for triggering modals or other side effects.
+   */
+  onDayClick?: () => void;
 }
 
-const DateSelector: React.FC<DateSelectorProps> = ({ selectedDate, onDateChange }) => {
+const DateSelector: React.FC<DateSelectorProps> = ({ selectedDate, onDateChange, onDayClick }) => {
   const startOfWeek = new Date(selectedDate);
   startOfWeek.setDate(selectedDate.getDate() - startOfWeek.getDay()); // Start from Sunday
 
@@ -24,12 +32,20 @@ const DateSelector: React.FC<DateSelectorProps> = ({ selectedDate, onDateChange 
       {weekDates.map((date, index) => {
         const dateYYYYMMDD = toYYYYMMDD(date);
         const isSelected = dateYYYYMMDD === toYYYYMMDD(selectedDate);
-        const isToday = dateYYYYMMDD === todayYYYYMMDD;
+        const isToday = checkIsToday(date); // Use the utility function to check if it's today
+
+        const handleClick = () => {
+          if (onDayClick) {
+            onDayClick(); // Call the onDayClick handler for any day
+          } else {
+            onDateChange(date); // Default handler if onDayClick is not provided
+          }
+        };
 
         return (
           <button
             key={index}
-            onClick={() => onDateChange(date)}
+            onClick={handleClick}
             className={`flex flex-col items-center justify-center w-12 h-20 rounded-xl transition-all duration-200 relative group focus:outline-none focus:ring-2 focus:ring-primary/50
               ${
                 isSelected 

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { CameraIcon } from './Icons';
 
@@ -14,7 +15,7 @@ const RequestCameraAccess: React.FC<RequestCameraAccessProps> = ({ onGrant, onDe
       <div className="w-24 h-24 bg-primary-light dark:bg-primary/20 rounded-full flex items-center justify-center mb-6">
         <CameraIcon className="w-12 h-12 text-primary" />
       </div>
-      <h2 className="text-2xl font-bold text-text-main dark:text-gray-100 mb-2">Enable Camera for {featureName}</h2>
+      <h2 className="text-2xl font-bold text-text-main dark:text-gray-100 mb-2 font-montserrat">Enable Camera for {featureName}</h2>
       <p className="text-text-light dark:text-gray-400 mb-8 max-w-sm">{featureDescription}</p>
       <button
         onClick={onGrant}

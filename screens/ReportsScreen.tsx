@@ -1,3 +1,5 @@
+
+
 import React, { useState, useMemo } from 'react';
 import { Meal, Activity, Theme } from '../types';
 import { toYYYYMMDD, formatDate } from '../utils/dateUtils';
@@ -5,6 +7,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pi
 import { useAppContext } from '../contexts/AppContext';
 import { formatWeight, getDisplayWeight } from '../utils/units';
 import { getAIPersonalizedSuggestion } from '../services/geminiService';
+import { BarChartIcon } from '../components/Icons'; // Import BarChartIcon for placeholder
 
 const StatCard: React.FC<{ label: string; value?: string; children?: React.ReactNode }> = ({ label, value, children }) => (
     <div className="bg-card dark:bg-dark-card p-4 rounded-2xl flex-1 shadow-sm">
@@ -39,7 +42,7 @@ const AISuggestionCard: React.FC<{
 }> = ({ suggestions, isLoading, error, onGenerate }) => {
     return (
         <div className="bg-card dark:bg-dark-card p-4 rounded-2xl shadow-sm">
-            <h2 className="text-lg font-semibold text-text-main dark:text-dark-text-main mb-4 flex items-center">
+            <h2 className="text-lg font-semibold text-text-main dark:text-dark-text-main mb-4 flex items-center font-montserrat">
                 💡 AI-Powered Insights
             </h2>
             {isLoading ? (
@@ -75,7 +78,7 @@ const AISuggestionCard: React.FC<{
     );
 };
 
-const ReportsScreen: React.FC = () => {
+const ProgressScreen: React.FC = () => { // Renamed from ReportsScreen
     const { 
         loggedMeals, 
         theme,
@@ -246,7 +249,7 @@ const ReportsScreen: React.FC = () => {
     const renderNutritionView = () => (
         <>
             <div className="bg-card dark:bg-dark-card rounded-2xl p-4 shadow-sm">
-                <h2 className="text-lg font-semibold text-text-main dark:text-dark-text-main mb-4">Calorie Intake</h2>
+                <h2 className="text-lg font-semibold text-text-main dark:text-dark-text-main mb-4 font-montserrat">Calorie Intake</h2>
                 <div style={{ width: '100%', height: 250 }}>
                     <ResponsiveContainer>
                         <BarChart data={nutritionData.chartData} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
@@ -260,7 +263,7 @@ const ReportsScreen: React.FC = () => {
             </div>
 
             <div className="bg-card dark:bg-dark-card rounded-2xl p-4 shadow-sm">
-                <h2 className="text-lg font-semibold text-text-main dark:text-dark-text-main mb-4">Macronutrient Distribution</h2>
+                <h2 className="text-lg font-semibold text-text-main dark:text-dark-text-main mb-4 font-montserrat">Macronutrient Distribution</h2>
                 {nutritionData.macroPieData.length > 0 ? (
                     <div style={{ width: '100%', height: 250 }} className="flex justify-center items-center text-text-main dark:text-dark-text-main">
                         <ResponsiveContainer>
@@ -281,7 +284,11 @@ const ReportsScreen: React.FC = () => {
                         </ResponsiveContainer>
                     </div>
                 ) : (
-                    <div className="text-center py-10 text-medium-gray dark:text-dark-gray"><p>No macronutrient data for this period.</p></div>
+                    <div className="text-center py-8 text-medium-gray dark:text-dark-gray">
+                        <BarChartIcon className="w-16 h-16 mx-auto text-medium-gray dark:text-dark-gray mb-4" />
+                        <p className="font-semibold text-text-main dark:text-dark-text-main mb-1">No Macro Data Yet</p>
+                        <p className="text-sm text-text-light dark:text-dark-text-light mt-1">Log a few meals to see your insights here!</p>
+                    </div>
                 )}
             </div>
         </>
@@ -290,7 +297,7 @@ const ReportsScreen: React.FC = () => {
     const renderActivityView = () => (
         <>
              <div className="bg-card dark:bg-dark-card rounded-2xl p-4 shadow-sm">
-                <h2 className="text-lg font-semibold text-text-main dark:text-dark-text-main mb-4">Calories Burned</h2>
+                <h2 className="text-lg font-semibold text-text-main dark:text-dark-text-main mb-4 font-montserrat">Calories Burned</h2>
                 <p className="text-3xl font-bold text-secondary">{activityData.totalCaloriesBurned} <span className="text-xl font-medium text-text-light dark:text-dark-text-light">kcal</span></p>
                 <div style={{ width: '100%', height: 250 }}>
                     <ResponsiveContainer>
@@ -318,7 +325,7 @@ const ReportsScreen: React.FC = () => {
                 </StatCard>
             </div>
             <div className="bg-card dark:bg-dark-card p-4 rounded-2xl">
-                <h2 className="text-lg font-semibold text-text-main dark:text-dark-text-main mb-2">Weight Progress</h2>
+                <h2 className="text-lg font-semibold text-text-main dark:text-dark-text-main mb-2 font-montserrat">Weight Progress</h2>
                 <div style={{ width: '100%', height: 250 }}>
                 {weightData.chartData.length > 1 ? (
                     <ResponsiveContainer>
@@ -342,7 +349,7 @@ const ReportsScreen: React.FC = () => {
 
     return (
         <div className="p-4 bg-background dark:bg-dark-background min-h-full">
-            <h1 className="text-3xl font-bold text-text-main dark:text-dark-text-main mb-6 text-center">Progress</h1>
+            <h1 className="text-3xl font-bold text-text-main dark:text-dark-text-main mb-6 text-center font-montserrat">Progress</h1>
             
             <div className="flex p-1 bg-light-gray dark:bg-dark-border rounded-full mb-6">
                 <button onClick={() => setView('Nutrition')} className={`w-full py-2 rounded-full text-sm font-semibold transition-colors ${view === 'Nutrition' ? 'bg-card dark:bg-dark-card text-primary shadow' : 'text-text-light dark:text-dark-text-light'}`}>Nutrition</button>
@@ -373,4 +380,4 @@ const ReportsScreen: React.FC = () => {
     );
 };
 
-export default ReportsScreen;
+export default ProgressScreen; // Renamed from ReportsScreen

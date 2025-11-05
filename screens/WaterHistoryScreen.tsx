@@ -1,3 +1,4 @@
+
 import React, { useMemo } from 'react';
 import { Page } from '../types';
 import { BackIcon } from '../components/Icons';
@@ -47,12 +48,12 @@ const WaterHistoryScreen: React.FC = () => {
                 <button onClick={() => navigateTo(Page.Settings)} className="p-2 -ml-2">
                     <BackIcon className="w-6 h-6 text-text-main dark:text-dark-text-main" />
                 </button>
-                <h1 className="text-xl font-bold text-text-main dark:text-dark-text-main mx-auto">Water Intake History</h1>
+                <h1 className="text-xl font-bold text-text-main dark:text-dark-text-main mx-auto font-montserrat">Water Intake History</h1>
                 <div className="w-6"></div>
             </header>
 
             <div className="bg-card dark:bg-dark-card rounded-2xl p-4 shadow-sm mb-6">
-                <h2 className="text-lg font-semibold text-text-main dark:text-dark-text-main mb-4">Last 7 Days (fl oz)</h2>
+                <h2 className="text-lg font-semibold text-text-main dark:text-dark-text-main mb-4 font-montserrat">Last 7 Days (fl oz)</h2>
                 <div style={{ width: '100%', height: 250 }}>
                     <ResponsiveContainer>
                         <BarChart data={last7DaysData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
@@ -67,7 +68,7 @@ const WaterHistoryScreen: React.FC = () => {
             </div>
 
             <div className="flex-1 overflow-y-auto bg-card dark:bg-dark-card rounded-2xl p-4 shadow-sm">
-                <h2 className="text-lg font-semibold text-text-main dark:text-dark-text-main mb-2">Log Entries</h2>
+                <h2 className="text-lg font-semibold text-text-main dark:text-dark-text-main mb-2 font-montserrat">Log Entries</h2>
                 {loggedEntries.length > 0 ? (
                     <div className="space-y-2">
                         {loggedEntries.map((entry, index) => (

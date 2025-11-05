@@ -3,7 +3,7 @@
 export enum Page {
   Dashboard = 'DASHBOARD',
   Diary = 'DIARY',
-  Reports = 'REPORTS',
+  Progress = 'PROGRESS',
   Settings = 'SETTINGS',
   LogMeal = 'LOG_MEAL',
   Camera = 'CAMERA',

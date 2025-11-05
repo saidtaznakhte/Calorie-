@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { Page, MacroGoals } from '../types';
 import { BackIcon } from '../components/Icons';
@@ -14,7 +15,7 @@ const MacroSlider: React.FC<{
 }> = ({ label, value, onChange, min, max, color }) => (
     <div className="mb-6">
         <div className="flex justify-between items-baseline mb-2">
-            <label className="text-lg font-semibold text-text-main dark:text-dark-text-main">{label}</label>
+            <label className="text-lg font-semibold text-text-main dark:text-dark-text-main font-montserrat">{label}</label>
             <span className="font-bold text-lg text-text-main dark:text-dark-text-main">{value}g</span>
         </div>
         <input
@@ -52,7 +53,7 @@ const AdjustMacrosScreen: React.FC = () => {
                 <button onClick={() => navigateTo(Page.Settings)} className="p-2 -ml-2">
                     <BackIcon className="w-6 h-6 text-text-main dark:text-dark-text-main" />
                 </button>
-                <h1 className="text-xl font-bold text-text-main dark:text-dark-text-main mx-auto">Adjust Macronutrients</h1>
+                <h1 className="text-xl font-bold text-text-main dark:text-dark-text-main mx-auto font-montserrat">Adjust Macronutrients</h1>
                 <div className="w-6"></div>
             </header>
             

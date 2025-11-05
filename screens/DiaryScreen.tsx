@@ -1,4 +1,5 @@
 
+
 import React, { useState, useMemo } from 'react';
 import { Page, Meal, MealType } from '../types';
 // FIX: Removed duplicate import alias for ChevronRightIcon.
@@ -63,7 +64,7 @@ const DiaryScreen: React.FC = () => {
                     <button onClick={() => changeDate(-1)} className="p-2"><ChevronLeftIcon className="w-6 h-6 text-text-main dark:text-dark-text-main" /></button>
                     <div className="text-center">
                         <div className="flex items-center justify-center gap-2">
-                            <h1 className="text-2xl font-bold text-text-main dark:text-dark-text-main">{formatDate(selectedDate)}</h1>
+                            <h1 className="text-2xl font-bold text-text-main dark:text-dark-text-main font-montserrat">{formatDate(selectedDate)}</h1>
                             <button onClick={openRemindersModal} className="p-1 text-text-light dark:text-dark-text-light hover:text-primary dark:hover:text-primary transition-colors">
                                 <BellIcon className="w-5 h-5" />
                             </button>
@@ -112,7 +113,7 @@ const DiaryScreen: React.FC = () => {
                                 <div className="flex justify-between items-center mb-3">
                                     <div className="flex items-center">
                                         <span className="text-2xl mr-3">{mealIcons[type]}</span>
-                                        <h2 className="text-lg font-semibold text-text-main dark:text-dark-text-main">{type}</h2>
+                                        <h2 className="text-lg font-semibold text-text-main dark:text-dark-text-main font-montserrat">{type}</h2>
                                     </div>
                                     <span className="font-semibold text-text-main dark:text-dark-text-main">{totalCalories} cal</span>
                                 </div>
@@ -148,12 +149,7 @@ const DiaryScreen: React.FC = () => {
                 )}
             </div>
 
-            <button
-                onClick={() => navigateTo(Page.LogMeal)}
-                className="fixed bottom-24 right-8 w-16 h-16 bg-primary rounded-full flex items-center justify-center text-white shadow-lg transition-transform hover:scale-105"
-            >
-                <PlusIcon className="w-8 h-8" />
-            </button>
+            {/* Removed the fixed bottom-24 right-8 FAB as logging is now handled by BottomNav */}
         </div>
     );
 };

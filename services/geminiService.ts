@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
 import { MealAnalysis, MealType, FoodSearchResult, UserProfile, MacroGoals } from "../types";
 
@@ -228,9 +229,9 @@ export const getAIPersonalizedSuggestion = async (payload: SuggestionPayload): P
     if (!API_KEY) {
         // Mock data
         return new Promise(resolve => setTimeout(() => resolve([
-            "You're doing great with your calorie goal! Maybe add a bit more protein like Greek yogurt to feel fuller.",
-            "Awesome activity level! Consider a 15-minute walk after dinner to aid digestion and add more steps.",
-            "Remember to stay hydrated! Drinking enough water can boost your metabolism."
+            "Great job hitting your calorie goal! Your average intake is right on target.",
+            "Your protein intake has been slightly below your goal this week. Try adding an extra serving of lean protein, like grilled chicken or a protein shake, to one of your meals.",
+            "Keep up the good work with your activity! Consider incorporating a new exercise, like swimming, to challenge your body in a different way."
         ]), 1500));
     }
     
@@ -238,8 +239,10 @@ export const getAIPersonalizedSuggestion = async (payload: SuggestionPayload): P
     
     const prompt = `
         Act as a friendly, encouraging, and insightful AI fitness and nutrition coach.
-        Analyze the following user data and provide 2-3 short, simple, and actionable suggestions to help them reach their goals. 
-        Keep each suggestion to one sentence. The tone should be positive and motivational.
+        Analyze the following user data, specifically comparing average performance against their goals for the last 7 days.
+        Provide 2-3 short, simple, and highly actionable suggestions to help them reach their goals.
+        Each suggestion must be a single sentence. The tone should be positive, motivational, and specific,
+        offering concrete food or activity examples where relevant.
 
         User Profile:
         - Goal: ${profile.primaryGoal}
@@ -254,13 +257,19 @@ export const getAIPersonalizedSuggestion = async (payload: SuggestionPayload): P
         - Fats Goal: ${macroGoals.fats}g
 
         User's Average Performance (last 7 days):
-        - Average Daily Calorie Intake: ${avgNutrition.calories.toFixed(0)} kcal
-        - Average Daily Protein Intake: ${avgNutrition.protein.toFixed(0)}g
-        - Average Daily Carbohydrates Intake: ${avgNutrition.carbs.toFixed(0)}g
-        - Average Daily Fats Intake: ${avgNutrition.fats.toFixed(0)}g
+        - Average Daily Calorie Intake: ${avgNutrition.calories.toFixed(0)} kcal (Goal: ${calorieGoal.toFixed(0)} kcal)
+        - Average Daily Protein Intake: ${avgNutrition.protein.toFixed(0)}g (Goal: ${macroGoals.protein}g)
+        - Average Daily Carbohydrates Intake: ${avgNutrition.carbs.toFixed(0)}g (Goal: ${macroGoals.carbs}g)
+        - Average Daily Fats Intake: ${avgNutrition.fats.toFixed(0)}g (Goal: ${macroGoals.fats}g)
         - Average Daily Calories Burned from Activity: ${avgCaloriesBurned.toFixed(0)} kcal
 
-        Based on this data, identify areas for improvement or encouragement. For example, if protein is low, suggest a high-protein snack. If calories are too high for a weight loss goal, suggest a small change like swapping a sugary drink for water. If activity is good, praise them and suggest a small addition.
+        Based on these comparisons and trends, identify areas for improvement or encouragement.
+        For example:
+        - If protein is consistently low, suggest a high-protein snack like a handful of almonds or a Greek yogurt.
+        - If calorie intake is consistently too high for a weight loss goal, suggest a small, easy change like swapping a sugary drink for water or reducing a portion of high-fat foods.
+        - If activity is on track or slightly below, praise the effort and suggest a small, achievable increase like a 15-minute walk.
+        - If a macro is significantly over, suggest a healthy swap.
+        Ensure your suggestions are concise and impactful.
     `;
 
     try {

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { ReminderSettings, ReminderType } from '../types';
 import { BellIcon, ClockIcon } from './Icons';
@@ -19,7 +20,7 @@ const ReminderRow: React.FC<{
     <div className="flex items-center justify-between py-3">
         <div className="flex items-center">
             <span className="text-2xl mr-4">{icon}</span>
-            <span className="font-semibold text-text-main dark:text-dark-text-main">{label}</span>
+            <span className="font-semibold text-text-main dark:text-dark-text-main font-montserrat">{label}</span>
         </div>
         <div className="flex items-center space-x-3">
             <input 
@@ -93,7 +94,7 @@ const RemindersModal: React.FC<RemindersModalProps> = ({ isOpen, onClose, remind
       <div className="bg-card dark:bg-dark-card rounded-2xl p-6 w-11/12 max-w-md animate-slide-in-up" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-center text-center mb-4">
             <ClockIcon className="w-6 h-6 mr-3 text-text-main dark:text-dark-text-main" />
-            <h2 className="text-xl font-bold text-text-main dark:text-dark-text-main">Set Reminders</h2>
+            <h2 className="text-xl font-bold text-text-main dark:text-dark-text-main font-montserrat">Set Reminders</h2>
         </div>
         
         {permission === 'default' && (

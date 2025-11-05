@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { Page, FoodSearchResult, MealType } from '../types';
 import { lookupBarcode } from '../services/barcodeService';
@@ -39,7 +40,7 @@ const FoundItemCard: React.FC<{
                     className="w-20 h-20 rounded-lg object-cover mr-4 flex-shrink-0 bg-light-gray"
                 />
                 <div className="flex-1">
-                    <h2 className="text-xl font-bold text-text-main dark:text-dark-text-main">{item.name}</h2>
+                    <h2 className="text-xl font-bold text-text-main dark:text-dark-text-main font-montserrat">{item.name}</h2>
                     <p className="text-4xl font-extrabold text-primary">{Math.round(item.calories)} <span className="text-xl font-semibold text-text-light dark:text-dark-text-light">kcal</span></p>
                 </div>
             </div>
@@ -73,7 +74,7 @@ const FoundItemCard: React.FC<{
 const NotFoundCard: React.FC<{ onRetry: () => void; onManualEntry: () => void }> = ({ onRetry, onManualEntry }) => {
     return (
         <div className="absolute bottom-0 left-0 right-0 bg-card dark:bg-dark-card rounded-t-3xl p-6 z-30 animate-slide-in-up shadow-[0_-10px_30px_rgba(0,0,0,0.1)] text-center">
-            <h2 className="text-2xl font-bold text-text-main dark:text-dark-text-main mb-2">Product Not Found</h2>
+            <h2 className="text-2xl font-bold text-text-main dark:text-dark-text-main mb-2 font-montserrat">Product Not Found</h2>
             <p className="text-text-light dark:text-dark-text-light mb-6">Sorry, we couldn't find this barcode in our database.</p>
             <div className="flex flex-col space-y-3">
                  <button onClick={onManualEntry} className="w-full bg-secondary text-white font-bold py-3 rounded-xl flex items-center justify-center">
@@ -215,7 +216,7 @@ const BarcodeScannerScreen: React.FC = () => {
                     <div className="absolute inset-0 flex flex-col items-center justify-between p-8 z-20">
                         <div className="w-full flex justify-between items-center">
                             <button onClick={() => navigateTo(Page.LogMeal)} className="p-2 bg-black bg-opacity-40 rounded-full"><BackIcon className="w-6 h-6 text-white" /></button>
-                            <h1 className="text-lg font-semibold bg-black bg-opacity-40 px-3 py-1 rounded-full">Scan Barcode</h1>
+                            <h1 className="text-lg font-semibold bg-black bg-opacity-40 px-3 py-1 rounded-full font-montserrat">Scan Barcode</h1>
                             <div className="w-10"></div>
                         </div>
                         

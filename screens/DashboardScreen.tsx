@@ -1,7 +1,8 @@
 
+
 import React, { useState, useMemo } from 'react';
-import { Page, MealType, Meal } from '../types';
-import { BellIcon, PlusIcon, ChevronLeftIcon, ChevronRightIcon, ChefHatIcon, FlameIcon } from '../components/Icons';
+import { Page, MealType, Meal, FoodSearchResult } from '../types';
+import { BellIcon, ChevronLeftIcon, ChevronRightIcon, ChefHatIcon, CalendarIcon } from '../components/Icons';
 import { toYYYYMMDD, formatDate, isToday, isYesterday } from '../utils/dateUtils';
 import { useAppContext } from '../contexts/AppContext';
 import ConcentricProgress from '../components/ConcentricProgress';
@@ -9,6 +10,8 @@ import WaterIntakePod from '../components/WaterIntakePod';
 import DateSelector from '../components/DateSelector';
 import DailySummaryCard from '../components/DailySummaryCard';
 import StreakCounter from '../components/StreakCounter';
+import CalendarModal from '../components/CalendarModal';
+import { popularFoods } from '../data/foodData';
 
 const mealIcons: Record<MealType, string> = {
     [MealType.Breakfast]: '🥞',
@@ -30,7 +33,7 @@ const MealSummaryCard: React.FC<{
             <div className="flex justify-between items-center mb-3">
                 <div className="flex items-center">
                     <span className="text-2xl mr-3">{mealIcons[mealType]}</span>
-                    <h3 className="text-lg font-semibold text-text-main dark:text-dark-text-main">{mealType}</h3>
+                    <h3 className="text-lg font-semibold text-text-main dark:text-dark-text-main font-montserrat">{mealType}</h3>
                 </div>
                 <span className="font-semibold text-text-main dark:text-dark-text-main">{totalCalories} cal</span>
             </div>
@@ -61,15 +64,15 @@ const DashboardScreen: React.FC = () => {
       waterIntakeHistory,
       waterGoal,
       handleWaterIntakeUpdate,
+      // Removed handleMealLogged from here as quick add is removed.
       viewMealDetail,
       dayStreak,
+      showToast,
     } = useAppContext();
 
     const [selectedDate, setSelectedDate] = useState(new Date());
-    const [touchStartX, setTouchStartX] = useState(0);
-    const [touchDeltaX, setTouchDeltaX] = useState(0);
-    const [isSwiping, setIsSwiping] = useState(false);
-    const [isFabMenuOpen, setIsFabMenuOpen] = useState(false);
+    // Removed isFabMenuOpen, isQuickAddMenuOpen states
+    const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false); // New state for calendar modal
 
     const dateString = toYYYYMMDD(selectedDate);
     const waterIntake = waterIntakeHistory[dateString] || 0;
@@ -97,6 +100,7 @@ const DashboardScreen: React.FC = () => {
 
     const mealsByType = useMemo(() => {
       return mealsForDay.reduce((acc, meal) => {
+        // FIX: Corrected typo `meal[Type]` to `meal.type`
         (acc[meal.type] = acc[meal.type] || []).push(meal);
         return acc;
       }, {} as Record<MealType, (Meal & { originalIndex: number })[]>);
@@ -120,40 +124,23 @@ const DashboardScreen: React.FC = () => {
         });
     };
 
-    const handleTouchStart = (e: React.TouchEvent) => {
-        setTouchStartX(e.touches[0].clientX);
-        setIsSwiping(true);
+    const handleOpenCalendar = () => {
+        setIsCalendarModalOpen(true);
     };
 
-    const handleTouchMove = (e: React.TouchEvent) => {
-        if (touchStartX === 0) return;
-        const currentX = e.touches[0].clientX;
-        setTouchDeltaX(currentX - touchStartX);
+    const handleCalendarDateSelect = (date: Date) => {
+        setSelectedDate(date);
+        setIsCalendarModalOpen(false);
     };
 
-    const handleTouchEnd = () => {
-        const swipeThreshold = 50; // pixels
-        if (Math.abs(touchDeltaX) > swipeThreshold) {
-            if (touchDeltaX > 0) {
-                // Swipe Right (previous day)
-                changeDay(-1);
-            } else {
-                // Swipe Left (next day)
-                changeDay(1);
-            }
-        }
-        
-        setTouchStartX(0);
-        setTouchDeltaX(0);
-        setIsSwiping(false);
-    };
+    // Removed quickAddFood function as quick add FAB is removed.
 
 
   return (
     <div className="bg-background dark:bg-dark-background min-h-full overflow-x-hidden">
       <header className="p-4 flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-text-main dark:text-dark-text-main">Hello, {profile.name}!</h1>
+          <h1 className="text-2xl font-bold text-text-main dark:text-dark-text-main font-montserrat">Hello, {profile.name}!</h1>
           <p className="text-text-light dark:text-dark-text-light">{dateSubtext}</p>
         </div>
         <div className="flex items-center space-x-2">
@@ -170,25 +157,21 @@ const DashboardScreen: React.FC = () => {
               <button onClick={() => changeDay(-1)} className="p-2 rounded-full hover:bg-white dark:hover:bg-dark-card" aria-label="Previous day">
                   <ChevronLeftIcon className="w-5 h-5 text-text-main dark:text-dark-text-main" />
               </button>
-              <h3 className="font-bold text-lg text-text-main dark:text-dark-text-main" aria-live="polite">
+              <h3 className="font-bold text-lg text-text-main dark:text-dark-text-main font-montserrat" aria-live="polite">
                   {formatDate(selectedDate, { month: 'long', year: 'numeric' })}
               </h3>
               <button onClick={() => changeDay(1)} className="p-2 rounded-full hover:bg-white dark:hover:bg-dark-card" aria-label="Next day">
                   <ChevronRightIcon className="w-5 h-5 text-text-main dark:text-dark-text-main" />
               </button>
           </div>
-          <DateSelector selectedDate={selectedDate} onDateChange={setSelectedDate} />
+          <DateSelector 
+            selectedDate={selectedDate} 
+            onDateChange={setSelectedDate} 
+            onDayClick={handleOpenCalendar} // Changed prop name to onDayClick
+          />
       </div>
       
-      <div 
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        style={{
-            transform: `translateX(${touchDeltaX}px)`,
-            transition: isSwiping ? 'none' : 'transform 0.3s ease-out',
-        }}
-      >
+      <div> {/* Removed touch event handlers for disabling swipe */}
         <div className="p-4 space-y-6">
             <DailySummaryCard 
                 caloriesIn={summary.calories}
@@ -207,10 +190,13 @@ const DashboardScreen: React.FC = () => {
             currentIntake={waterIntake}
             goal={waterGoal}
             onAddWater={(amount) => handleWaterIntakeUpdate(dateString, waterIntake + amount)}
+            onRemoveWater={(amount) => handleWaterIntakeUpdate(dateString, Math.max(0, waterIntake - amount))}
+            onResetWater={() => handleWaterIntakeUpdate(dateString, 0)}
+            showToast={showToast}
             />
             
             <div className="space-y-4">
-                <h2 className="text-xl font-bold text-text-main dark:text-dark-text-main">
+                <h2 className="text-xl font-bold text-text-main dark:text-dark-text-main font-montserrat">
                     Logged Meals
                 </h2>
 
@@ -222,58 +208,24 @@ const DashboardScreen: React.FC = () => {
                         <MealSummaryCard mealType={MealType.Snacks} meals={mealsByType[MealType.Snacks] || []} onMealClick={viewMealDetail} />
                     </div>
                 ) : (
-                    <div className="text-center py-12 px-4 bg-card dark:bg-dark-card rounded-2xl shadow-sm">
+                    <div className="text-center py-8 px-4 bg-card dark:bg-dark-card rounded-2xl shadow-sm">
                         <ChefHatIcon className="w-12 h-12 mx-auto text-medium-gray dark:text-dark-gray mb-4" />
-                        <p className="font-semibold text-text-main dark:text-dark-text-main mb-1">Nothing Logged Yet</p>
-                        <p className="text-text-light dark:text-dark-text-light mb-4 text-sm">Tap the plus button to add your first meal of the day.</p>
+                        <p className="font-bold text-lg text-text-main dark:text-dark-text-main mb-1">Your day is a blank canvas!</p>
+                        <p className="text-sm text-text-light dark:text-dark-text-light mt-2">Tap the plus button to log your first meal and see your progress come to life.</p>
                     </div>
                 )}
             </div>
         </div>
       </div>
-      <>
-        {isFabMenuOpen && (
-            <div 
-                className="fixed inset-0 bg-black/40 z-30 animate-fade-in"
-                onClick={() => setIsFabMenuOpen(false)}
-                aria-hidden="true"
-            ></div>
-        )}
-        <div className="fixed bottom-24 right-6 z-40">
-            <div className="flex flex-col items-end">
-                <div className={`flex flex-col items-end gap-4 mb-4 transition-all duration-300 ease-in-out ${isFabMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
-                    <div className="flex items-center gap-3">
-                        <span className="bg-card dark:bg-dark-card text-sm text-text-main dark:text-dark-text-main font-semibold px-3 py-1 rounded-md shadow-md">Log Activity</span>
-                        <button
-                            onClick={() => { navigateTo(Page.LogActivity); setIsFabMenuOpen(false); }}
-                            className="w-12 h-12 bg-secondary rounded-full flex items-center justify-center text-white shadow-lg"
-                            aria-label="Log Activity"
-                        >
-                            <FlameIcon className="w-6 h-6" />
-                        </button>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <span className="bg-card dark:bg-dark-card text-sm text-text-main dark:text-dark-text-main font-semibold px-3 py-1 rounded-md shadow-md">Log Meal</span>
-                        <button
-                            onClick={() => { navigateTo(Page.LogMeal); setIsFabMenuOpen(false); }}
-                            className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white shadow-lg"
-                            aria-label="Log Meal"
-                        >
-                            <ChefHatIcon className="w-6 h-6" />
-                        </button>
-                    </div>
-                </div>
-                <button
-                    onClick={() => setIsFabMenuOpen(prev => !prev)}
-                    className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300 hover:scale-105 active:scale-95"
-                    aria-label={isFabMenuOpen ? "Close actions menu" : "Open actions menu"}
-                    aria-expanded={isFabMenuOpen}
-                >
-                    <PlusIcon className={`w-8 h-8 transition-transform duration-300 ${isFabMenuOpen ? 'rotate-45' : 'rotate-0'}`} />
-                </button>
-            </div>
-        </div>
-      </>
+      {/* Removed Quick Add FAB and Menu */}
+      {/* Removed Main FAB and Menu */}
+
+      <CalendarModal
+        isOpen={isCalendarModalOpen}
+        onClose={() => setIsCalendarModalOpen(false)}
+        selectedDate={selectedDate}
+        onSelectDate={handleCalendarDateSelect}
+      />
     </div>
   );
 };

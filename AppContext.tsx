@@ -1,5 +1,4 @@
 
-
 import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode, useMemo, useRef } from 'react';
 import { Page, Meal, Theme, MacroGoals, WeightEntry, UserProfile, FoodSearchResult, Activity, UserData, Gender, ActivityLevel, PrimaryGoal, UnitSystem, PreppedMeal, MealType, ThemePreference, CustomActivity, ReminderSettings, ReminderType } from '../types';
 import { toYYYYMMDD } from '../utils/dateUtils';
@@ -70,7 +69,7 @@ interface AppContextState {
   selectedMeal: { meal: Meal; index: number } | null;
   recentFoods: FoodSearchResult[];
   isRemindersModalOpen: boolean;
-  toastMessage: { text: string; type?: 'success' | 'error' | 'info' } | null; // Updated type for toastMessage
+  toastMessage: string | null;
   
   // App actions
   navigateTo: (newPage: Page) => void;
@@ -94,8 +93,7 @@ interface AppContextState {
   handleRemindersUpdate: (newSettings: ReminderSettings) => void;
   openRemindersModal: () => void;
   closeRemindersModal: () => void;
-  showToast: (message: { text: string; type?: 'success' | 'error' | 'info' }) => void; // Updated signature for showToast
-  triggerHapticFeedback: () => void; // Added for haptic feedback
+  showToast: (message: string) => void;
 }
 
 const AppContext = createContext<AppContextState | undefined>(undefined);
@@ -107,10 +105,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [isRegistering, setIsRegistering] = useState(false);
   const [selectedMealIndex, setSelectedMealIndex] = useState<number | null>(null);
   const [isRemindersModalOpen, setIsRemindersModalOpen] = useState(false);
-  const [toastMessage, setToastMessage] = useState<{ text: string; type?: 'success' | 'error' | 'info' } | null>(null); // Updated state type
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const toastTimeoutRef = useRef<number | null>(null);
 
-  const showToast = useCallback((message: { text: string; type?: 'success' | 'error' | 'info' }) => {
+  const showToast = useCallback((message: string) => {
     setToastMessage(message);
     if (toastTimeoutRef.current) {
       clearTimeout(toastTimeoutRef.current);
@@ -118,12 +116,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     toastTimeoutRef.current = window.setTimeout(() => {
       setToastMessage(null);
     }, 3000); // Toast disappears after 3 seconds
-  }, []);
-
-  const triggerHapticFeedback = useCallback(() => {
-    if ('vibrate' in navigator) {
-      navigator.vibrate(50); // Vibrate for 50ms
-    }
   }, []);
 
   const currentUser = useMemo(() => {
@@ -335,12 +327,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const handleMealLogged = useCallback((meal: Meal) => {
     updateCurrentUser(ud => handleLog(ud, 'meal', meal));
-    showToast({ text: `${meal.name} logged!`, type: 'success' }); // Updated call to showToast
+    showToast(`${meal.name} logged!`);
   }, [updateCurrentUser, showToast]);
   
   const handleActivityLogged = useCallback((activity: Activity) => {
       updateCurrentUser(ud => handleLog(ud, 'activity', activity));
-      showToast({ text: `${activity.name} logged!`, type: 'success' }); // Updated call to showToast
+      showToast(`${activity.name} logged!`);
   }, [updateCurrentUser, showToast]);
 
   const handleMealRemoved = useCallback((mealIndex: number) => {
@@ -401,7 +393,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
               [date]: newIntake,
           }
       }));
-      showToast({ text: "Water logged!", type: 'success' }); // Updated call to showToast
+      showToast("Water logged!");
   }, [updateCurrentUser, showToast]);
 
   const toggleFavoriteFood = useCallback((food: FoodSearchResult) => {
@@ -430,10 +422,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           type: mealType,
           date: date,
       };
-      // No explicit showToast here, as it's typically called by the LogServingModal
-      // or other logging components after this function completes.
-      handleMealLogged(loggedMeal); 
-  }, [handleMealLogged]);
+      handleMealLogged(loggedMeal);
+      showToast(`${loggedMeal.name} logged!`);
+  }, [handleMealLogged, showToast]);
 
   const handlePreppedMealDelete = useCallback((mealId: string) => {
       updateCurrentUser(ud => ({ ...ud, preppedMeals: ud.preppedMeals.filter(m => m.id !== mealId) }));
@@ -489,7 +480,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     toastMessage,
 
     // Actions
-    navigateTo, handleThemePreferenceChange, handleMealLogged, handleMealRemoved, handleMealRemovedAndNavigate, handleActivityLogged, handleActivityRemoved, handleMacrosUpdate, handleWeightUpdate, handleProfileUpdate, handleWaterIntakeUpdate, toggleFavoriteFood, handlePreppedMealAdd, handlePreppedMealLogged, handlePreppedMealDelete, handleCustomActivityAdd, viewMealDetail, addFoodToRecents, handleRemindersUpdate, openRemindersModal, closeRemindersModal, showToast, triggerHapticFeedback
+    navigateTo, handleThemePreferenceChange, handleMealLogged, handleMealRemoved, handleMealRemovedAndNavigate, handleActivityLogged, handleActivityRemoved, handleMacrosUpdate, handleWeightUpdate, handleProfileUpdate, handleWaterIntakeUpdate, toggleFavoriteFood, handlePreppedMealAdd, handlePreppedMealLogged, handlePreppedMealDelete, handleCustomActivityAdd, viewMealDetail, addFoodToRecents, handleRemindersUpdate, openRemindersModal, closeRemindersModal, showToast
   };
 
   return <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>;

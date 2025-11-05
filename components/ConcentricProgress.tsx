@@ -18,8 +18,10 @@ const ProgressCircle: React.FC<{
   radius: number;
   stroke: number;
   progress: number;
-  color: string;
-}> = ({ radius, stroke, progress, color }) => {
+  color: string; // e.g., 'text-protein'
+  backgroundColor: string; // e.g., 'text-protein-light'
+  animatePulse?: boolean; // New prop for pulsing animation
+}> = ({ radius, stroke, progress, color, backgroundColor, animatePulse }) => {
   const normalizedRadius = radius - stroke / 2;
   const circumference = normalizedRadius * 2 * Math.PI;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
@@ -27,7 +29,7 @@ const ProgressCircle: React.FC<{
   return (
     <g>
       <circle
-        className="text-light-gray dark:text-dark-border"
+        className={backgroundColor} /* Changed to use dynamic background color */
         strokeWidth={stroke}
         stroke="currentColor"
         fill="transparent"
@@ -36,7 +38,7 @@ const ProgressCircle: React.FC<{
         cy={125}
       />
       <circle
-        className={color}
+        className={`${color} ${animatePulse ? 'animate-pulse' : ''}`} // Apply pulse animation conditionally
         strokeWidth={stroke}
         strokeDasharray={circumference + ' ' + circumference}
         style={{ strokeDashoffset, transform: 'rotate(-90deg)', transformOrigin: '50% 50%' }}
@@ -62,9 +64,15 @@ const ConcentricProgress: React.FC<ConcentricProgressProps> = ({ summary, calori
     <div className="bg-card dark:bg-dark-card rounded-2xl p-6 shadow-sm flex flex-col items-center">
       <div className="relative w-[250px] h-[250px]">
         <svg className="w-full h-full" viewBox="0 0 250 250">
-          <ProgressCircle radius={110} stroke={18} progress={proteinProgress} color="text-protein" />
-          <ProgressCircle radius={85} stroke={18} progress={carbsProgress} color="text-carbs" />
-          <ProgressCircle radius={60} stroke={18} progress={fatsProgress} color="text-fats" />
+          <ProgressCircle 
+            radius={110} stroke={18} 
+            progress={proteinProgress} 
+            color="text-protein" 
+            backgroundColor="text-protein-light"
+            animatePulse={proteinProgress >= 100} // Animate if protein goal is met or exceeded
+          />
+          <ProgressCircle radius={85} stroke={18} progress={carbsProgress} color="text-carbs" backgroundColor="text-carbs-light" />
+          <ProgressCircle radius={60} stroke={18} progress={fatsProgress} color="text-fats" backgroundColor="text-fats-light" />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <p className="text-4xl font-extrabold text-primary">{remainingCalories}</p>

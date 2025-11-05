@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { Page } from './types';
 import { AppProvider, useAppContext } from './contexts/AppContext';
@@ -8,7 +9,7 @@ import LogMealScreen from './screens/LogMealScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import CameraScreen from './screens/CameraScreen';
 import DiaryScreen from './screens/DiaryScreen';
-import ReportsScreen from './screens/ReportsScreen';
+import ProgressScreen from './screens/ProgressScreen'; // Changed from ReportsScreen
 import AdjustMacrosScreen from './screens/AdjustMacrosScreen';
 import WeightGoalsScreen from './screens/WeightGoalsScreen';
 import WeightHistoryScreen from './screens/WeightHistoryScreen';
@@ -22,9 +23,10 @@ import ManualLogScreen from './screens/ManualLogScreen';
 import MealPrepCreatorScreen from './screens/MealPrepCreatorScreen';
 import MealDetailScreen from './screens/MealDetailScreen';
 import RemindersModal from './components/RemindersModal';
+import Toast from './components/Toast'; // Import Toast component
 
 const MainApp: React.FC = () => {
-  const { page, isRemindersModalOpen, currentUser, closeRemindersModal, handleRemindersUpdate } = useAppContext();
+  const { page, isRemindersModalOpen, currentUser, closeRemindersModal, handleRemindersUpdate, toastMessage } = useAppContext();
 
   const renderPage = () => {
     switch (page) {
@@ -32,8 +34,8 @@ const MainApp: React.FC = () => {
         return <DashboardScreen />;
       case Page.Diary:
         return <DiaryScreen />;
-      case Page.Reports:
-        return <ReportsScreen />;
+      case Page.Progress: // Changed from Reports
+        return <ProgressScreen />; // Changed from ReportsScreen
       case Page.Settings:
         return <SettingsScreen />;
       case Page.LogMeal:
@@ -65,10 +67,10 @@ const MainApp: React.FC = () => {
     }
   };
   
-  const isBottomNavVisible = [Page.Dashboard, Page.Diary, Page.Reports, Page.Settings].includes(page);
+  const isBottomNavVisible = [Page.Dashboard, Page.Diary, Page.Progress, Page.Settings].includes(page); // Updated for Page.Progress
 
   return (
-    <div className="max-w-md mx-auto h-screen bg-background dark:bg-dark-background font-sans flex flex-col shadow-2xl">
+    <div className="max-w-md mx-auto h-screen bg-background dark:bg-dark-background font-inter flex flex-col shadow-2xl">
        {isRemindersModalOpen && currentUser && (
           <RemindersModal
               isOpen={isRemindersModalOpen}
@@ -83,6 +85,7 @@ const MainApp: React.FC = () => {
         </div>
       </main>
       {isBottomNavVisible && <BottomNav />}
+      <Toast message={toastMessage} /> {/* Add Toast component here */}
     </div>
   );
 };

@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { Page, FoodSearchResult, PreppedMeal } from '../types';
 import { useAppContext } from '../contexts/AppContext';
@@ -45,7 +46,7 @@ const SearchModal: React.FC<{
                      <button onClick={onClose} className="p-2 -ml-2">
                         <BackIcon className="w-6 h-6 text-text-main dark:text-dark-text-main" />
                     </button>
-                    <h2 className="text-xl font-bold text-text-main dark:text-dark-text-main mx-auto">Add Ingredient</h2>
+                    <h2 className="text-xl font-bold text-text-main dark:text-dark-text-main mx-auto font-montserrat">Add Ingredient</h2>
                     <div className="w-6"></div>
                 </header>
                 <div className="relative mb-4">
@@ -74,7 +75,7 @@ const SearchModal: React.FC<{
 };
 
 const MealPrepCreatorScreen: React.FC = () => {
-    const { navigateTo, handlePreppedMealAdd } = useAppContext();
+    const { navigateTo, handlePreppedMealAdd, showToast } = useAppContext();
     const [name, setName] = useState('');
     const [servings, setServings] = useState('1');
     const [ingredients, setIngredients] = useState<FoodSearchResult[]>([]);
@@ -127,6 +128,7 @@ const MealPrepCreatorScreen: React.FC = () => {
             fatsPerServing: nutritionPerServing.fats,
         };
         handlePreppedMealAdd(mealData);
+        showToast({ text: `${name.trim()} meal prep saved!`, type: 'success' }); // Updated call to showToast
         navigateTo(Page.LogMeal);
     };
 
@@ -137,7 +139,7 @@ const MealPrepCreatorScreen: React.FC = () => {
                 <button onClick={() => navigateTo(Page.LogMeal)} className="p-2 -ml-2">
                     <BackIcon className="w-6 h-6 text-text-main dark:text-dark-text-main" />
                 </button>
-                <h1 className="text-xl font-bold text-text-main dark:text-dark-text-main mx-auto">Create Meal Prep</h1>
+                <h1 className="text-xl font-bold text-text-main dark:text-dark-text-main mx-auto font-montserrat">Create Meal Prep</h1>
                 <div className="w-6"></div>
             </header>
 
@@ -154,7 +156,7 @@ const MealPrepCreatorScreen: React.FC = () => {
                 </div>
                 
                 <div className="bg-card dark:bg-dark-card p-4 rounded-xl shadow-sm text-center">
-                    <h3 className="font-semibold text-text-main dark:text-dark-text-main mb-3">Nutrition per Serving</h3>
+                    <h3 className="font-semibold text-text-main dark:text-dark-text-main mb-3 font-montserrat">Nutrition per Serving</h3>
                     <div className="grid grid-cols-4 gap-2">
                         <NutrientDisplay label="Calories" value={nutritionPerServing.calories} unit="kcal" color="text-primary"/>
                         <NutrientDisplay label="Protein" value={nutritionPerServing.protein} unit="g" color="text-protein"/>
@@ -164,7 +166,7 @@ const MealPrepCreatorScreen: React.FC = () => {
                 </div>
                 
                 <div className="bg-card dark:bg-dark-card p-4 rounded-xl shadow-sm">
-                    <h3 className="font-semibold text-text-main dark:text-dark-text-main mb-3">Ingredients ({ingredients.length})</h3>
+                    <h3 className="font-semibold text-text-main dark:text-dark-text-main mb-3 font-montserrat">Ingredients ({ingredients.length})</h3>
                     <div className="space-y-2 max-h-60 overflow-y-auto">
                         {ingredients.map((ing, index) => (
                             <div key={index} className="flex items-center p-2 rounded-lg bg-light-gray dark:bg-dark-border">
@@ -192,3 +194,4 @@ const MealPrepCreatorScreen: React.FC = () => {
 };
 
 export default MealPrepCreatorScreen;
+    

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Page, UserProfile, Gender, ActivityLevel, PrimaryGoal, UnitSystem } from '../types';
 import { BackIcon } from '../components/Icons';
@@ -67,13 +68,13 @@ const ProfileScreen: React.FC = () => {
                 <button onClick={() => navigateTo(Page.Settings)} className="p-2 -ml-2">
                     <BackIcon className="w-6 h-6 text-text-main dark:text-dark-text-main" />
                 </button>
-                <h1 className="text-xl font-bold text-text-main dark:text-dark-text-main mx-auto">Edit Profile</h1>
+                <h1 className="text-xl font-bold text-text-main dark:text-dark-text-main mx-auto font-montserrat">Edit Profile</h1>
                 <div className="w-6"></div>
             </header>
 
             <div className="flex-1 overflow-y-auto bg-card dark:bg-dark-card rounded-2xl p-6 shadow-sm space-y-6">
                 <div>
-                    <label className="block text-sm font-semibold text-text-light dark:text-dark-text-light mb-2">Avatar</label>
+                    <label className="block text-sm font-semibold text-text-light dark:text-dark-text-light mb-2 font-montserrat">Avatar</label>
                     <div className="flex flex-col items-center">
                         <div className="w-24 h-24 bg-secondary/10 rounded-full flex items-center justify-center mb-4 text-5xl">
                             {profile.avatar}
@@ -93,17 +94,17 @@ const ProfileScreen: React.FC = () => {
                 </div>
 
                 <div>
-                    <label htmlFor="name" className="block text-sm font-semibold text-text-light dark:text-dark-text-light mb-2">Name</label>
+                    <label htmlFor="name" className="block text-sm font-semibold text-text-light dark:text-dark-text-light mb-2 font-montserrat">Name</label>
                     <input id="name" name="name" type="text" value={profile.name} onChange={handleInputChange} className="w-full bg-light-gray dark:bg-dark-border text-text-main dark:text-dark-text-main p-3 rounded-xl border-2 border-transparent focus:border-primary focus:ring-0 outline-none" />
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label htmlFor="age" className="block text-sm font-semibold text-text-light dark:text-dark-text-light mb-2">Age</label>
+                        <label htmlFor="age" className="block text-sm font-semibold text-text-light dark:text-dark-text-light mb-2 font-montserrat">Age</label>
                         <input id="age" name="age" type="number" value={profile.age} onChange={handleInputChange} className="w-full bg-light-gray dark:bg-dark-border text-text-main dark:text-dark-text-main p-3 rounded-xl border-2 border-transparent focus:border-primary focus:ring-0 outline-none" />
                     </div>
                     <div>
-                        <label htmlFor="gender" className="block text-sm font-semibold text-text-light dark:text-dark-text-light mb-2">Gender</label>
+                        <label htmlFor="gender" className="block text-sm font-semibold text-text-light dark:text-dark-text-light mb-2 font-montserrat">Gender</label>
                         <select id="gender" name="gender" value={profile.gender} onChange={handleSelectChange} className="w-full bg-light-gray dark:bg-dark-border text-text-main dark:text-dark-text-main p-3 rounded-xl border-2 border-transparent focus:border-primary focus:ring-0 outline-none">
                             {Object.values(Gender).map(g => <option key={g} value={g}>{g}</option>)}
                         </select>
@@ -111,12 +112,12 @@ const ProfileScreen: React.FC = () => {
                 </div>
                 
                  <div>
-                    <label className="block text-sm font-semibold text-text-light dark:text-dark-text-light mb-2">Unit System</label>
+                    <label className="block text-sm font-semibold text-text-light dark:text-dark-text-light mb-2 font-montserrat">Unit System</label>
                     <UnitSelector selected={profile.unitSystem} onSelect={(system) => setProfile(p => ({ ...p, unitSystem: system }))} />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-semibold text-text-light dark:text-dark-text-light mb-2">Height</label>
+                    <label className="block text-sm font-semibold text-text-light dark:text-dark-text-light mb-2 font-montserrat">Height</label>
                     {profile.unitSystem === UnitSystem.Metric ? (
                         <div className="relative">
                             <input type="number" value={getDisplayHeightCm(profile.height)} onChange={e => setProfile(p => ({...p, height: cmToInches(parseInt(e.target.value) || 0)}))} className="w-full bg-light-gray dark:bg-dark-border text-text-main dark:text-dark-text-main p-3 rounded-xl border-2 border-transparent focus:border-primary focus:ring-0 outline-none pr-12" />
@@ -131,14 +132,14 @@ const ProfileScreen: React.FC = () => {
                 </div>
                 
                 <div>
-                    <label htmlFor="activityLevel" className="block text-sm font-semibold text-text-light dark:text-dark-text-light mb-2">Activity Level</label>
+                    <label htmlFor="activityLevel" className="block text-sm font-semibold text-text-light dark:text-dark-text-light mb-2 font-montserrat">Activity Level</label>
                     <select id="activityLevel" name="activityLevel" value={profile.activityLevel} onChange={handleSelectChange} className="w-full bg-light-gray dark:bg-dark-border text-text-main dark:text-dark-text-main p-3 rounded-xl border-2 border-transparent focus:border-primary focus:ring-0 outline-none">
                         {Object.values(ActivityLevel).map(level => <option key={level} value={level}>{level}</option>)}
                     </select>
                 </div>
                 
                 <div>
-                    <label htmlFor="primaryGoal" className="block text-sm font-semibold text-text-light dark:text-dark-text-light mb-2">Primary Goal</label>
+                    <label htmlFor="primaryGoal" className="block text-sm font-semibold text-text-light dark:text-dark-text-light mb-2 font-montserrat">Primary Goal</label>
                     <select id="primaryGoal" name="primaryGoal" value={profile.primaryGoal} onChange={handleSelectChange} className="w-full bg-light-gray dark:bg-dark-border text-text-main dark:text-dark-text-main p-3 rounded-xl border-2 border-transparent focus:border-primary focus:ring-0 outline-none">
                         {Object.values(PrimaryGoal).map(goal => <option key={goal} value={goal}>{goal}</option>)}
                     </select>

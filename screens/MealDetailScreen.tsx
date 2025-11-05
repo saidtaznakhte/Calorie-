@@ -1,3 +1,5 @@
+
+
 import React from 'react';
 import { useAppContext } from '../contexts/AppContext';
 import { BackIcon, TrashIcon } from '../components/Icons';
@@ -52,14 +54,14 @@ const MealDetailScreen: React.FC = () => {
                 <button onClick={goBack} className="p-2 -ml-2">
                     <BackIcon className="w-6 h-6 text-text-main dark:text-dark-text-main" />
                 </button>
-                <h1 className="text-xl font-bold text-text-main dark:text-dark-text-main mx-auto">Meal Details</h1>
+                <h1 className="text-xl font-bold text-text-main dark:text-dark-text-main mx-auto font-montserrat">Meal Details</h1>
                 <div className="w-6"></div>
             </header>
 
             <div className="flex-1 overflow-y-auto bg-card dark:bg-dark-card rounded-2xl p-6 shadow-sm space-y-6">
                  <div>
                     <p className="text-sm text-text-light dark:text-dark-text-light">{meal.type} &bull; {formatDate(new Date(meal.date + 'T00:00:00'), { weekday: 'long', month: 'long', day: 'numeric' })}</p>
-                    <h2 className="text-3xl font-bold text-text-main dark:text-dark-text-main">{meal.name}</h2>
+                    <h2 className="text-3xl font-bold text-text-main dark:text-dark-text-main font-montserrat">{meal.name}</h2>
                 </div>
 
                 <div className="text-center">
@@ -75,7 +77,7 @@ const MealDetailScreen: React.FC = () => {
 
                 {(meal.fiber || meal.sugar || meal.sodium) && (
                     <div>
-                        <h3 className="text-lg font-semibold text-text-main dark:text-dark-text-main mb-3">Additional Info</h3>
+                        <h3 className="text-lg font-semibold text-text-main dark:text-dark-text-main mb-3 font-montserrat">Additional Info</h3>
                         <div className="grid grid-cols-3 gap-4 text-center bg-light-gray dark:bg-dark-border p-4 rounded-xl">
                             <div>
                                 <p className="font-bold text-text-main dark:text-dark-text-main">{meal.fiber ?? 'N/A'}</p>

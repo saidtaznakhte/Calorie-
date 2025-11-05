@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Page, Meal, MealType } from '../types';
 import { BackIcon } from '../components/Icons';
@@ -14,7 +15,7 @@ const InputField: React.FC<{
     unit?: string;
 }> = ({ label, name, value, onChange, type = 'text', placeholder, unit }) => (
     <div>
-        <label htmlFor={name} className="block text-sm font-semibold text-text-light dark:text-dark-text-light mb-2">{label}</label>
+        <label htmlFor={name} className="block text-sm font-semibold text-text-light dark:text-dark-text-light mb-2 font-montserrat">{label}</label>
         <div className="relative">
             <input 
                 id={name} 
@@ -33,7 +34,7 @@ const InputField: React.FC<{
 
 
 const ManualLogScreen: React.FC = () => {
-    const { navigateTo, handleMealLogged } = useAppContext();
+    const { navigateTo, handleMealLogged, showToast } = useAppContext();
     const [meal, setMeal] = useState({
         name: '',
         calories: '',
@@ -78,6 +79,7 @@ const ManualLogScreen: React.FC = () => {
         };
         
         handleMealLogged(newMeal);
+        showToast({ text: `${newMeal.name} logged!`, type: 'success' }); // Updated call to showToast
     };
 
     return (
@@ -86,7 +88,7 @@ const ManualLogScreen: React.FC = () => {
                 <button onClick={() => navigateTo(Page.LogMeal)} className="p-2 -ml-2">
                     <BackIcon className="w-6 h-6 text-text-main dark:text-dark-text-main" />
                 </button>
-                <h1 className="text-xl font-bold text-text-main dark:text-dark-text-main mx-auto">Manual Entry</h1>
+                <h1 className="text-xl font-bold text-text-main dark:text-dark-text-main mx-auto font-montserrat">Manual Entry</h1>
                 <div className="w-6"></div>
             </header>
             
@@ -101,7 +103,7 @@ const ManualLogScreen: React.FC = () => {
                     />
                     
                     <div>
-                        <label htmlFor="type" className="block text-sm font-semibold text-text-light dark:text-dark-text-light mb-2">Meal</label>
+                        <label htmlFor="type" className="block text-sm font-semibold text-text-light dark:text-dark-text-light mb-2 font-montserrat">Meal</label>
                         <select 
                             id="type" 
                             name="type" 
@@ -169,3 +171,4 @@ const ManualLogScreen: React.FC = () => {
 };
 
 export default ManualLogScreen;
+    

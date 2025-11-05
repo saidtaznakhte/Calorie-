@@ -1,5 +1,6 @@
 
-import React, { useState, useMemo } from 'react';
+
+import React, { useState, useMemo, useEffect } from 'react';
 import { Page, ActivityType, CustomActivity } from '../types';
 import { BackIcon, PlusIcon } from '../components/Icons';
 import { useAppContext } from '../contexts/AppContext';
@@ -103,13 +104,13 @@ const LogActivityScreen: React.FC = () => {
                 <button onClick={() => navigateTo(Page.Dashboard)} className="p-2 -ml-2">
                     <BackIcon className="w-6 h-6 text-text-main dark:text-dark-text-main" />
                 </button>
-                <h1 className="text-xl font-bold text-text-main dark:text-dark-text-main mx-auto">Log Activity</h1>
+                <h1 className="text-xl font-bold text-text-main dark:text-dark-text-main mx-auto font-montserrat">Log Activity</h1>
                 <div className="w-6"></div>
             </header>
 
             <div className="flex-1 overflow-y-auto">
                 <div className="bg-card dark:bg-dark-card rounded-2xl p-6 shadow-sm mb-6">
-                    <h2 className="text-lg font-semibold text-text-main dark:text-dark-text-main mb-4">Choose Your Activity</h2>
+                    <h2 className="text-lg font-semibold text-text-main dark:text-dark-text-main mb-4 font-montserrat">Choose Your Activity</h2>
                     <div className="flex space-x-4 overflow-x-auto pb-4 -mx-6 px-6">
                         {allActivities.map(activity => (
                             <ActivityButton 
@@ -131,7 +132,7 @@ const LogActivityScreen: React.FC = () => {
 
                 {selectedActivity && (
                     <div className="bg-card dark:bg-dark-card rounded-2xl p-6 shadow-sm animate-fade-in">
-                        <h2 className="text-lg font-semibold text-text-main dark:text-dark-text-main mb-4">Duration</h2>
+                        <h2 className="text-lg font-semibold text-text-main dark:text-dark-text-main mb-4 font-montserrat">Duration</h2>
                         <div className="flex items-baseline justify-center bg-light-gray dark:bg-dark-border p-4 rounded-xl">
                             <input 
                                 type="number"
@@ -172,7 +173,7 @@ const LogActivityScreen: React.FC = () => {
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 animate-fade-in" onClick={handleCloseModal}>
                     <div className="bg-card dark:bg-dark-card rounded-2xl p-6 shadow-xl w-11/12 max-w-sm animate-slide-in-up" onClick={(e) => e.stopPropagation()}>
-                        <h3 className="text-xl font-bold text-text-main dark:text-dark-text-main mb-6">Add Custom Activity</h3>
+                        <h3 className="text-xl font-bold text-text-main dark:text-dark-text-main mb-6 font-montserrat">Add Custom Activity</h3>
                         <div className="space-y-4">
                             <div>
                                 <label className="block text-sm font-semibold text-text-light dark:text-dark-text-light mb-2">Activity Name</label>

@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 interface InfoModalProps {
@@ -19,7 +20,7 @@ const InfoModal: React.FC<InfoModalProps> = ({ title, onClose, children }) => {
         className="bg-white dark:bg-gray-800 rounded-2xl p-6 w-11/12 max-w-sm animate-slide-in-up"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 id="info-modal-title" className="text-xl font-bold text-text-main dark:text-gray-100 mb-4 text-center">{title}</h2>
+        <h2 id="info-modal-title" className="text-xl font-bold text-text-main dark:text-gray-100 mb-4 text-center font-montserrat">{title}</h2>
         <div className="text-text-light dark:text-gray-300 space-y-3 text-center mb-6">
           {children}
         </div>

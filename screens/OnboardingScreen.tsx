@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { UserProfile, Gender, ActivityLevel, PrimaryGoal, UnitSystem } from '../types';
 import { useAppContext } from '../contexts/AppContext';
@@ -24,7 +25,7 @@ const StepButton: React.FC<{ onClick: () => void; text: string; disabled?: boole
 
 const SelectionCard: React.FC<{ title: string; description: string; isSelected: boolean; onSelect: () => void; }> = ({ title, description, isSelected, onSelect }) => (
      <button onClick={onSelect} className={`w-full p-4 rounded-xl text-left border-2 transition-all ${isSelected ? 'bg-primary-light dark:bg-primary/20 border-primary' : 'bg-card dark:bg-dark-card border-light-gray dark:border-dark-border'}`}>
-        <h3 className={`font-bold text-lg ${isSelected ? 'text-primary' : 'text-text-main dark:text-dark-text-main'}`}>{title}</h3>
+        <h3 className={`font-bold text-lg ${isSelected ? 'text-primary' : 'text-text-main dark:text-dark-text-main'} font-montserrat`}>{title}</h3>
         <p className="text-sm text-text-light dark:text-dark-text-light">{description}</p>
     </button>
 );
@@ -111,7 +112,7 @@ const OnboardingScreen: React.FC = () => {
         switch (step) {
             case 1: return (
                 <>
-                    <h2 className="text-3xl font-bold text-text-main dark:text-dark-text-main mb-2">Welcome! What's your name?</h2>
+                    <h2 className="text-3xl font-bold text-text-main dark:text-dark-text-main mb-2 font-montserrat">Welcome! What's your name?</h2>
                     <p className="text-text-light dark:text-dark-text-light mb-8">Let's start with the basics.</p>
                     <input id="name" name="name" type="text" value={profile.name} onChange={(e) => setProfile(p => ({...p, name: e.target.value}))} placeholder="e.g., Alex Doe" className="w-full bg-card dark:bg-dark-card text-text-main dark:text-dark-text-main p-4 rounded-xl border-2 border-light-gray dark:border-dark-border focus:border-primary focus:ring-0 outline-none" required/>
                     <div className="mt-8">
@@ -121,7 +122,7 @@ const OnboardingScreen: React.FC = () => {
             );
             case 2: return (
                 <>
-                    <h2 className="text-3xl font-bold text-text-main dark:text-dark-text-main mb-2">Tell us about yourself</h2>
+                    <h2 className="text-3xl font-bold text-text-main dark:text-dark-text-main mb-2 font-montserrat">Tell us about yourself</h2>
                     <p className="text-text-light dark:text-dark-text-light mb-8">This helps us personalize your plan.</p>
                      <div className="space-y-6">
                         <div>
@@ -142,7 +143,7 @@ const OnboardingScreen: React.FC = () => {
             );
             case 3: return (
                  <>
-                    <h2 className="text-3xl font-bold text-text-main dark:text-dark-text-main mb-2">Your measurements</h2>
+                    <h2 className="text-3xl font-bold text-text-main dark:text-dark-text-main mb-2 font-montserrat">Your measurements</h2>
                     <p className="text-text-light dark:text-dark-text-light mb-8">Used to calculate your daily energy needs.</p>
                      <div className="space-y-6">
                         <UnitSelector selected={profile.unitSystem} onSelect={(system) => setProfile(p => ({ ...p, unitSystem: system }))} />
@@ -181,7 +182,7 @@ const OnboardingScreen: React.FC = () => {
             );
             case 4: return (
                 <>
-                    <h2 className="text-3xl font-bold text-text-main dark:text-dark-text-main mb-2">How active are you?</h2>
+                    <h2 className="text-3xl font-bold text-text-main dark:text-dark-text-main mb-2 font-montserrat">How active are you?</h2>
                     <p className="text-text-light dark:text-dark-text-light mb-8">Be honest! This helps tailor your calorie goal.</p>
                     <div className="space-y-3">
                         <SelectionCard title="Sedentary" description="Little to no exercise, office job" isSelected={profile.activityLevel === ActivityLevel.Sedentary} onSelect={() => setProfile(p => ({...p, activityLevel: ActivityLevel.Sedentary}))}/>
@@ -197,7 +198,7 @@ const OnboardingScreen: React.FC = () => {
             );
              case 5: return (
                 <>
-                    <h2 className="text-3xl font-bold text-text-main dark:text-dark-text-main mb-2">What's your primary goal?</h2>
+                    <h2 className="text-3xl font-bold text-text-main dark:text-dark-text-main mb-2 font-montserrat">What's your primary goal?</h2>
                     <p className="text-text-light dark:text-dark-text-light mb-8">We'll create a plan to help you reach it.</p>
                     <div className="space-y-3">
                         <SelectionCard title="Lose Weight" description="Create a calorie deficit to shed pounds" isSelected={profile.primaryGoal === PrimaryGoal.LoseWeight} onSelect={() => setProfile(p => ({...p, primaryGoal: PrimaryGoal.LoseWeight}))}/>
@@ -211,7 +212,7 @@ const OnboardingScreen: React.FC = () => {
             );
             case 6: return (
                 <>
-                    <h2 className="text-3xl font-bold text-text-main dark:text-dark-text-main mb-2">Your Personalized Plan</h2>
+                    <h2 className="text-3xl font-bold text-text-main dark:text-dark-text-main mb-2 font-montserrat">Your Personalized Plan</h2>
                     <p className="text-text-light dark:text-dark-text-light mb-8">Here's the starting plan we've created for you. You can adjust this later in settings.</p>
                     <div className="bg-card dark:bg-dark-card p-6 rounded-2xl text-center mb-6">
                         <p className="text-sm text-text-light dark:text-dark-text-light">Daily Calorie Goal</p>

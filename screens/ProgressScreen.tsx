@@ -1,159 +1,403 @@
+
 import React, { useState, useMemo } from 'react';
-import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon } from '../components/Icons';
-import { useAppContext } from '../contexts/AppContext';
+import { Meal, Activity, Theme } from '../types';
 import { toYYYYMMDD, formatDate } from '../utils/dateUtils';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Legend } from 'recharts';
+import { useAppContext } from '../contexts/AppContext';
 import { formatWeight, getDisplayWeight } from '../utils/units';
+import { getAIPersonalizedSuggestion } from '../services/geminiService';
+import { BarChartIcon } from '../components/Icons'; // Import BarChartIcon for placeholder
 
-const StatCard: React.FC<{ label: string; value: string; }> = ({ label, value }) => (
-    <div className="bg-white dark:bg-dark-card p-4 rounded-2xl flex-1">
+const StatCard: React.FC<{ label: string; value?: string; children?: React.ReactNode }> = ({ label, value, children }) => (
+    <div className="bg-card dark:bg-dark-card p-4 rounded-2xl flex-1 shadow-sm">
         <p className="text-sm text-text-light dark:text-dark-text-light">{label}</p>
-        <p className="text-2xl font-bold text-text-main dark:text-dark-text-main">{value}</p>
+        {children ?? <p className="text-2xl font-bold text-text-main dark:text-dark-text-main">{value}</p>}
     </div>
 );
 
-// A card to display macro progress, adapted for this screen
-const MacroCard: React.FC<{ label: string; value: number; goal: number; color: string; }> = ({ label, value, goal, color }) => (
-    <div className="bg-light-gray dark:bg-gray-700/50 p-4 rounded-xl flex-1">
-        <div className="flex justify-between items-center mb-1">
-            <span className="text-sm font-semibold text-text-main dark:text-dark-text-main">{label}</span>
-        </div>
-        <p className="text-2xl font-bold text-text-main dark:text-dark-text-main">{value.toFixed(0)}<span className="text-sm text-text-light dark:text-dark-text-light"> / {goal}g</span></p>
-        <div className="w-full bg-gray-200 dark:bg-dark-border rounded-full h-1.5 mt-2">
-            <div className={`${color} h-1.5 rounded-full`} style={{ width: `${goal > 0 ? Math.min((value / goal) * 100, 100) : 0}%` }}></div>
-        </div>
-    </div>
-);
+const BmiIndicator: React.FC<{ category: string }> = ({ category }) => {
+    const categoryStyles: { [key: string]: { dot: string; text: string; } } = {
+        'Underweight': { dot: 'bg-fats', text: 'text-fats' },
+        'Healthy': { dot: 'bg-primary', text: 'text-primary' },
+        'Overweight': { dot: 'bg-secondary', text: 'text-secondary' },
+        'Obese': { dot: 'bg-protein', text: 'text-protein' },
+    };
 
+    const styles = categoryStyles[category] || { dot: 'bg-medium-gray', text: 'text-medium-gray' };
 
-const ProgressScreen: React.FC = () => {
-    const { loggedMeals, weightHistory, goalWeight, currentWeight, profile, theme, macroGoals } = useAppContext();
+    return (
+        <div className="flex items-center gap-1.5">
+            <div className={`w-2.5 h-2.5 rounded-full ${styles.dot}`}></div>
+            <span className={`text-sm font-semibold ${styles.text}`}>{category}</span>
+        </div>
+    );
+};
+
+const AISuggestionCard: React.FC<{
+    suggestions: string[] | null;
+    isLoading: boolean;
+    error: string | null;
+    onGenerate: () => void;
+    initialSuggestions?: string[]; // New prop for initial display
+    hasGenerated: boolean; // New prop to track if user has generated
+}> = ({ suggestions, isLoading, error, onGenerate, initialSuggestions, hasGenerated }) => {
+    const displaySuggestions = hasGenerated ? suggestions : (suggestions || initialSuggestions);
+
+    return (
+        <div className="bg-card dark:bg-dark-card p-4 rounded-2xl shadow-sm">
+            <h2 className="text-lg font-semibold text-text-main dark:text-dark-text-main mb-4 flex items-center font-montserrat">
+                💡 AI-Powered Insights
+            </h2>
+            {isLoading ? (
+                <div className="flex items-center justify-center h-24">
+                    <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                    <p className="ml-3 text-text-light dark:text-dark-text-light">Analyzing your week...</p>
+                </div>
+            ) : error ? (
+                <div className="text-center py-4">
+                    <p className="text-protein mb-3">{error}</p>
+                    <button onClick={onGenerate} className="bg-primary text-white font-semibold py-2 px-4 rounded-lg text-sm">
+                        Try Again
+                    </button>
+                </div>
+            ) : (
+                <>
+                    {displaySuggestions && displaySuggestions.length > 0 ? (
+                        <ul className="space-y-3">
+                            {displaySuggestions.map((s, i) => (
+                                <li key={i} className="flex items-start">
+                                    <span className="text-primary mr-3 mt-1">✓</span>
+                                    <p className="text-text-main dark:text-dark-text-main text-sm">{s}</p>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <div className="text-center py-4">
+                            <p className="text-text-light dark:text-dark-text-light mb-4">Get personalized tips based on your weekly progress.</p>
+                        </div>
+                    )}
+                    <div className="text-center mt-6">
+                        <button onClick={onGenerate} className="bg-primary text-white font-semibold py-2 px-4 rounded-lg">
+                            {hasGenerated ? 'Re-generate Insights' : 'Generate Insights'}
+                        </button>
+                    </div>
+                </>
+            )}
+        </div>
+    );
+};
+
+const initialAiSuggestions = [
+    "You're doing great with your calorie goals! Keep up the consistent effort.",
+    "Consider adding a bit more protein to your breakfast, like Greek yogurt or eggs, to feel fuller longer.",
+    "Try incorporating a short 15-minute walk after dinner; it can help with digestion and boost your daily activity."
+];
+
+const ProgressScreen: React.FC = () => { // Renamed from ReportsScreen
+    const { 
+        loggedMeals, 
+        theme,
+        loggedActivities,
+        weightHistory,
+        goalWeight,
+        currentWeight,
+        profile,
+        macroGoals,
+    } = useAppContext();
+    
+    const [timeframe, setTimeframe] = useState<'weekly' | 'monthly'>('weekly');
     const [view, setView] = useState<'Nutrition' | 'Activity' | 'Weight'>('Nutrition');
-
-    const weeklyAverages = useMemo(() => {
-        const oneWeekAgo = new Date();
-        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-        const oneWeekAgoStr = toYYYYMMDD(oneWeekAgo);
-
-        const recentMeals = loggedMeals.filter(m => m.date >= oneWeekAgoStr);
-        
-        const totals = recentMeals.reduce((sum, meal) => {
-            sum.calories += meal.calories;
-            sum.protein += meal.protein;
-            sum.carbs += meal.carbs;
-            sum.fats += meal.fats;
-            return sum;
-        }, { calories: 0, protein: 0, carbs: 0, fats: 0 });
-
-        const daysWithMeals = new Set(recentMeals.map(m => m.date)).size;
-
-        if (daysWithMeals === 0) {
-            return { calories: 0, protein: 0, carbs: 0, fats: 0 };
-        }
-
-        return {
-            calories: Math.round(totals.calories / daysWithMeals),
-            protein: Math.round(totals.protein / daysWithMeals),
-            carbs: Math.round(totals.carbs / daysWithMeals),
-            fats: Math.round(totals.fats / daysWithMeals),
-        };
-    }, [loggedMeals]);
-
-    const calorieGoal = useMemo(() => (macroGoals.protein * 4) + (macroGoals.carbs * 4) + (macroGoals.fats * 9), [macroGoals]);
-    
-    const bmi = useMemo(() => {
-        if (!currentWeight || !profile.height) return 0;
-        // BMI = (weight in lbs / (height in inches)^2) * 703
-        const bmiValue = (currentWeight / (profile.height * profile.height)) * 703;
-        return bmiValue.toFixed(1);
-    }, [currentWeight, profile.height]);
-    
-    const bmiCategory = useMemo(() => {
-        const bmiVal = parseFloat(bmi);
-        if (bmiVal < 18.5) return 'Underweight';
-        if (bmiVal < 25) return 'Healthy';
-        if (bmiVal < 30) return 'Overweight';
-        return 'Obese';
-    }, [bmi]);
+    const [aiSuggestions, setAiSuggestions] = useState<string[] | null>(null);
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [suggestionError, setSuggestionError] = useState<string | null>(null);
+    const [hasGeneratedInsights, setHasGeneratedInsights] = useState(false); // New state to track if user has generated insights
     
     const isDarkMode = theme === 'dark';
-    const axisColor = isDarkMode ? '#94A3B8' : '#64748B';
+    const axisColor = isDarkMode ? '#9CA3AF' : '#6B7280';
     const tooltipStyle = {
-      backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+      backgroundColor: isDarkMode ? 'rgba(30, 41, 59, 0.8)' : 'rgba(255, 255, 255, 0.8)',
       borderRadius: '0.5rem',
-      border: `1px solid ${isDarkMode ? '#334155' : '#e5e7eb'}`,
-      color: isDarkMode ? '#F1F5F9' : '#1E293B'
+      border: `1px solid ${isDarkMode ? '#334151' : '#e5e7eb'}`,
+      color: isDarkMode ? '#F8FAFC' : '#1E293B'
     };
-    
-    const weightChartData = weightHistory.map(entry => ({
-        date: formatDate(new Date(entry.date), { month: 'short', day: 'numeric' }),
-        weight: getDisplayWeight(entry.weight, profile.unitSystem),
-        goal: getDisplayWeight(goalWeight, profile.unitSystem)
-    }));
 
-    const calorieGoalPercentage = calorieGoal > 0 ? Math.round((weeklyAverages.calories / calorieGoal) * 100) : 0;
+    const handleGenerateSuggestion = async () => {
+        setIsGenerating(true);
+        setSuggestionError(null);
+        setAiSuggestions(null); // Clear previous suggestions
+        setHasGeneratedInsights(true); // Mark that user has initiated generation
+
+        try {
+            const endDate = new Date();
+            const startDate = new Date();
+            startDate.setDate(endDate.getDate() - 7);
+            const startDateString = toYYYYMMDD(startDate);
+
+            const recentMeals = loggedMeals.filter(m => m.date >= startDateString);
+            const daysWithMeals = new Set(recentMeals.map(m => m.date)).size || 1;
+            const totalNutrition = recentMeals.reduce((acc, meal) => {
+                acc.calories += meal.calories;
+                acc.protein += meal.protein;
+                acc.carbs += meal.carbs;
+                acc.fats += meal.fats;
+                return acc;
+            }, { calories: 0, protein: 0, carbs: 0, fats: 0 });
+
+            const avgNutrition = {
+                calories: totalNutrition.calories / daysWithMeals,
+                protein: totalNutrition.protein / daysWithMeals,
+                carbs: totalNutrition.carbs / daysWithMeals,
+                fats: totalNutrition.fats / daysWithMeals,
+            };
+            
+            const recentActivities = loggedActivities.filter(a => a.date >= startDateString);
+            const daysWithActivity = new Set(recentActivities.map(a => a.date)).size || 1;
+            const totalCaloriesBurned = recentActivities.reduce((sum, act) => sum + act.caloriesBurned, 0);
+            const avgCaloriesBurned = totalCaloriesBurned / daysWithActivity;
+            
+            const calorieGoal = (macroGoals.protein * 4) + (macroGoals.carbs * 4) + (macroGoals.fats * 9);
+
+            const suggestions = await getAIPersonalizedSuggestion({
+                profile,
+                macroGoals,
+                calorieGoal,
+                avgNutrition,
+                avgCaloriesBurned,
+            });
+            setAiSuggestions(suggestions);
+        } catch (err) {
+            setSuggestionError('Sorry, I couldn\'t generate insights right now.');
+            console.error(err);
+        } finally {
+            setIsGenerating(false);
+        }
+    };
+
+    const nutritionData = useMemo(() => {
+        const endDate = new Date();
+        const numDays = timeframe === 'weekly' ? 7 : 30;
+        
+        const dateArray = Array.from({ length: numDays }, (_, i) => {
+            const date = new Date();
+            date.setDate(endDate.getDate() - i);
+            return date;
+        }).reverse();
+
+        const chartData = dateArray.map(date => {
+            const dateString = toYYYYMMDD(date);
+            const mealsForDay = loggedMeals.filter(m => m.date === dateString);
+            const dailySummary = mealsForDay.reduce((acc, meal) => {
+                acc.calories += meal.calories;
+                acc.protein += meal.protein;
+                acc.carbs += meal.carbs;
+                acc.fats += meal.fats;
+                return acc;
+            }, { calories: 0, protein: 0, carbs: 0, fats: 0 });
+
+            return {
+                name: formatDate(date, { month: 'short', day: 'numeric' }),
+                ...dailySummary
+            };
+        });
+
+        const totalMacros = chartData.reduce((acc, day) => {
+             acc.protein += day.protein;
+             acc.carbs += day.carbs;
+             acc.fats += day.fats;
+             return acc;
+        }, { protein: 0, carbs: 0, fats: 0 });
+
+        const macroPieData = [
+            { name: 'Protein', value: totalMacros.protein },
+            { name: 'Carbs', value: totalMacros.carbs },
+            { name: 'Fats', value: totalMacros.fats },
+        ].filter(d => d.value > 0);
+
+        return { chartData, macroPieData };
+    }, [loggedMeals, timeframe]);
+
+    const activityData = useMemo(() => {
+        const endDate = new Date();
+        const numDays = timeframe === 'weekly' ? 7 : 30;
+        
+        const dateArray = Array.from({ length: numDays }, (_, i) => {
+            const date = new Date();
+            date.setDate(endDate.getDate() - i);
+            return date;
+        }).reverse();
+
+        const chartData = dateArray.map(date => {
+            const dateString = toYYYYMMDD(date);
+            const activitiesForDay = loggedActivities.filter(a => a.date === dateString);
+            const caloriesBurned = activitiesForDay.reduce((sum, act) => sum + act.caloriesBurned, 0);
+            return {
+                name: formatDate(date, { month: 'short', day: 'numeric' }),
+                caloriesBurned,
+            };
+        });
+
+        const totalCaloriesBurned = chartData.reduce((sum, day) => sum + day.caloriesBurned, 0);
+
+        return { chartData, totalCaloriesBurned };
+    }, [loggedActivities, timeframe]);
+
+    const weightData = useMemo(() => {
+        const bmi = (currentWeight / (profile.height * profile.height)) * 703;
+        const bmiCategory = (() => {
+            if (bmi < 18.5) return 'Underweight';
+            if (bmi < 25) return 'Healthy';
+            if (bmi < 30) return 'Overweight';
+            return 'Obese';
+        })();
+
+        const chartData = weightHistory.map(entry => ({
+            date: formatDate(new Date(entry.date), { month: 'short', day: 'numeric' }),
+            weight: getDisplayWeight(entry.weight, profile.unitSystem),
+            goal: getDisplayWeight(goalWeight, profile.unitSystem)
+        }));
+
+        return {
+            bmi: bmi.toFixed(1),
+            bmiCategory,
+            chartData
+        };
+    }, [weightHistory, currentWeight, goalWeight, profile]);
     
+
+    const renderNutritionView = () => (
+        <>
+            <div className="bg-card dark:bg-dark-card rounded-2xl p-4 shadow-sm">
+                <h2 className="text-lg font-semibold text-text-main dark:text-dark-text-main mb-4 font-montserrat">Calorie Intake</h2>
+                <div style={{ width: '100%', height: 250 }}>
+                    <ResponsiveContainer>
+                        <BarChart data={nutritionData.chartData} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
+                            <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} stroke={axisColor} />
+                            <YAxis fontSize={12} tickLine={false} axisLine={false} stroke={axisColor} />
+                            <Tooltip contentStyle={tooltipStyle} cursor={{ fill: isDarkMode ? 'rgba(156, 163, 175, 0.1)' : 'rgba(229, 231, 235, 0.4)'}} />
+                            <Bar dataKey="calories" fill="#00C795" radius={[4, 4, 0, 0]} />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
+            </div>
+
+            <div className="bg-card dark:bg-dark-card rounded-2xl p-4 shadow-sm">
+                <h2 className="text-lg font-semibold text-text-main dark:text-dark-text-main mb-4 font-montserrat">Macronutrient Distribution</h2>
+                {nutritionData.macroPieData.length > 0 ? (
+                    <div style={{ width: '100%', height: 250 }} className="flex justify-center items-center text-text-main dark:text-dark-text-main">
+                        <ResponsiveContainer>
+                            <PieChart>
+                                <Pie
+                                    data={nutritionData.macroPieData} cx="50%" cy="50%"
+                                    labelLine={false} outerRadius={80} fill="#8884d8" dataKey="value"
+                                    label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
+                                    fontSize={12}
+                                >
+                                    {nutritionData.macroPieData.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={['#EF4444', '#FBBF24', '#3B82F6'][index]} />
+                                    ))}
+                                </Pie>
+                                <Legend formatter={(value) => <span className="text-text-main dark:text-dark-text-main">{value}</span>} />
+                                <Tooltip contentStyle={tooltipStyle} />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </div>
+                ) : (
+                    <div className="text-center py-8 text-medium-gray dark:text-dark-gray">
+                        <BarChartIcon className="w-16 h-16 mx-auto text-medium-gray dark:text-dark-gray mb-4" />
+                        <p className="font-semibold text-text-main dark:text-dark-text-main mb-1">No Macro Data Yet</p>
+                        <p className="text-sm text-text-light dark:text-dark-text-light mt-1">Log a few meals to see your insights here!</p>
+                    </div>
+                )}
+            </div>
+        </>
+    );
+    
+    const renderActivityView = () => (
+        <>
+             <div className="bg-card dark:bg-dark-card rounded-2xl p-4 shadow-sm">
+                <h2 className="text-lg font-semibold text-text-main dark:text-dark-text-main mb-4 font-montserrat">Calories Burned</h2>
+                <p className="text-3xl font-bold text-secondary">{activityData.totalCaloriesBurned} <span className="text-xl font-medium text-text-light dark:text-dark-text-light">kcal</span></p>
+                <div style={{ width: '100%', height: 250 }}>
+                    <ResponsiveContainer>
+                        <BarChart data={activityData.chartData} margin={{ top: 20, right: 10, left: -20, bottom: 5 }}>
+                            <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} stroke={axisColor} />
+                            <YAxis fontSize={12} tickLine={false} axisLine={false} stroke={axisColor} />
+                            <Tooltip contentStyle={tooltipStyle} cursor={{ fill: isDarkMode ? 'rgba(156, 163, 175, 0.1)' : 'rgba(229, 231, 235, 0.4)'}} />
+                            <Bar dataKey="caloriesBurned" fill="#F97316" radius={[4, 4, 0, 0]} />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
+            </div>
+        </>
+    );
+
+    const renderWeightView = () => (
+        <>
+            <div className="flex gap-4">
+                <StatCard label="Current Weight" value={formatWeight(currentWeight, profile.unitSystem)} />
+                <StatCard label="BMI">
+                    <div className="flex items-baseline gap-2">
+                        <p className="text-2xl font-bold text-text-main dark:text-dark-text-main">{weightData.bmi}</p>
+                        <BmiIndicator category={weightData.bmiCategory} />
+                    </div>
+                </StatCard>
+            </div>
+            <div className="bg-card dark:bg-dark-card p-4 rounded-2xl">
+                <h2 className="text-lg font-semibold text-text-main dark:text-dark-text-main mb-2 font-montserrat">Weight Progress</h2>
+                <div style={{ width: '100%', height: 250 }}>
+                {weightData.chartData.length > 1 ? (
+                    <ResponsiveContainer>
+                        <LineChart data={weightData.chartData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
+                            <XAxis dataKey="date" fontSize={12} tickLine={false} axisLine={false} stroke={axisColor} />
+                            <YAxis domain={['dataMin - 5', 'dataMax + 5']} fontSize={12} tickLine={false} axisLine={false} stroke={axisColor} unit={profile.unitSystem === 'metric' ? ' kg' : ' lbs'} />
+                            <Tooltip contentStyle={tooltipStyle} />
+                            <Line type="monotone" dataKey="weight" name="Weight" stroke="#00C795" strokeWidth={2} />
+                            <Line type="monotone" dataKey="goal" name="Goal" stroke="#F97316" strokeDasharray="5 5" />
+                        </LineChart>
+                    </ResponsiveContainer>
+                ) : (
+                    <div className="flex items-center justify-center h-full text-text-light dark:text-dark-text-light">
+                        <p>Log your weight for a few days to see a chart.</p>
+                    </div>
+                )}
+                </div>
+            </div>
+        </>
+    );
+
     return (
-        <div className="bg-background dark:bg-dark-background min-h-full">
-            <header className="p-4 flex justify-between items-center">
-                <button><ChevronLeftIcon className="w-6 h-6 text-text-main dark:text-dark-text-main" /></button>
-                <h1 className="text-xl font-bold text-text-main dark:text-dark-text-main">Weekly Progress</h1>
-                <button><CalendarIcon className="w-6 h-6 text-text-main dark:text-dark-text-main" /></button>
-            </header>
-
-            <div className="p-4 space-y-4">
-                <div className="bg-card dark:bg-dark-card p-6 rounded-3xl flex items-center justify-between">
-                    <div>
-                        <p className="text-sm text-text-light dark:text-dark-text-light">Avg. Calorie Intake</p>
-                        <p className="text-3xl font-bold text-text-main dark:text-dark-text-main">{weeklyAverages.calories} <span className="text-xl">/ {Math.round(calorieGoal)} kcal</span></p>
-                        <p className="font-semibold text-primary">You're on track!</p>
-                    </div>
-                    <div className="relative w-20 h-20">
-                        <svg className="w-full h-full" viewBox="0 0 36 36">
-                            <path className="text-light-gray dark:text-dark-border" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3"></path>
-                            <path className="text-primary" strokeDasharray={`${calorieGoalPercentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" ></path>
-                        </svg>
-                        <div className="absolute inset-0 flex items-center justify-center font-bold text-lg text-text-main dark:text-dark-text-main">{calorieGoalPercentage}%</div>
-                    </div>
+        <div className="p-4 bg-background dark:bg-dark-background min-h-full">
+            <h1 className="text-3xl font-bold text-text-main dark:text-dark-text-main mb-6 text-center font-montserrat">Progress</h1>
+            
+            <div className="flex p-1 bg-light-gray dark:bg-dark-border rounded-full mb-6">
+                <button onClick={() => setView('Nutrition')} className={`w-full py-2 rounded-full text-sm font-semibold transition-colors ${view === 'Nutrition' ? 'bg-card dark:bg-dark-card text-primary shadow' : 'text-text-light dark:text-dark-text-light'}`}>Nutrition</button>
+                <button onClick={() => setView('Activity')} className={`w-full py-2 rounded-full text-sm font-semibold transition-colors ${view === 'Activity' ? 'bg-card dark:bg-dark-card text-primary shadow' : 'text-text-light dark:text-dark-text-light'}`}>Activity</button>
+                <button onClick={() => setView('Weight')} className={`w-full py-2 rounded-full text-sm font-semibold transition-colors ${view === 'Weight' ? 'bg-card dark:bg-dark-card text-primary shadow' : 'text-text-light dark:text-dark-text-light'}`}>Weight</button>
+            </div>
+            
+            {(view === 'Nutrition' || view === 'Activity') && (
+                <div className="flex justify-center p-1 bg-light-gray dark:bg-dark-border rounded-full mb-6">
+                    <button onClick={() => setTimeframe('weekly')} className={`w-full py-2 rounded-full text-sm font-semibold transition-colors ${timeframe === 'weekly' ? 'bg-card dark:bg-dark-card text-primary shadow' : 'text-text-light dark:text-dark-text-light'}`}>Weekly</button>
+                    <button onClick={() => setTimeframe('monthly')} className={`w-full py-2 rounded-full text-sm font-semibold transition-colors ${timeframe === 'monthly' ? 'bg-card dark:bg-dark-card text-primary shadow' : 'text-text-light dark:text-dark-text-light'}`}>Monthly</button>
                 </div>
-
-                <div className="bg-white dark:bg-dark-card p-4 rounded-2xl">
-                    <h2 className="text-lg font-semibold text-text-main dark:text-dark-text-main mb-4">Macronutrient Averages</h2>
-                    <div className="flex flex-col sm:flex-row gap-4">
-                        <MacroCard label="Protein" value={weeklyAverages.protein} goal={macroGoals.protein} color="bg-protein" />
-                        <MacroCard label="Carbs" value={weeklyAverages.carbs} goal={macroGoals.carbs} color="bg-carbs" />
-                        <MacroCard label="Fats" value={weeklyAverages.fats} goal={macroGoals.fats} color="bg-fats" />
-                    </div>
-                </div>
-
-                <div className="flex gap-4">
-                    <StatCard label="Current Weight" value={formatWeight(currentWeight, profile.unitSystem)} />
-                    <StatCard label="BMI" value={`${bmi} (${bmiCategory})`} />
-                </div>
+            )}
+            
+            <div className="space-y-6 animate-fade-in">
+                <AISuggestionCard 
+                    suggestions={aiSuggestions}
+                    isLoading={isGenerating}
+                    error={suggestionError}
+                    onGenerate={handleGenerateSuggestion}
+                    initialSuggestions={initialAiSuggestions}
+                    hasGenerated={hasGeneratedInsights}
+                />
                 
-                 <div className="bg-white dark:bg-dark-card p-4 rounded-2xl">
-                     <p className="text-sm text-text-light dark:text-dark-text-light mb-2">Weight Progress (Last {weightHistory.length} entries)</p>
-                     <div style={{ width: '100%', height: 200 }}>
-                        {weightHistory.length > 1 ? (
-                            <ResponsiveContainer>
-                                <LineChart data={weightChartData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
-                                    <XAxis dataKey="date" fontSize={12} tickLine={false} axisLine={false} stroke={axisColor} />
-                                    <YAxis domain={['dataMin - 5', 'dataMax + 5']} fontSize={12} tickLine={false} axisLine={false} stroke={axisColor} unit={profile.unitSystem === 'metric' ? 'kg' : 'lbs'} />
-                                    <Tooltip contentStyle={tooltipStyle} />
-                                    <Line type="monotone" dataKey="weight" name="Weight" stroke="#00C795" strokeWidth={2} />
-                                    <Line type="monotone" dataKey="goal" name="Goal" stroke="#F97316" strokeDasharray="5 5" />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        ) : (
-                            <div className="flex items-center justify-center h-full text-text-light dark:text-dark-text-light">
-                                <p>Not enough data for a chart yet.</p>
-                            </div>
-                        )}
-                    </div>
-                </div>
+                {view === 'Nutrition' && renderNutritionView()}
+                {view === 'Activity' && renderActivityView()}
+                {view === 'Weight' && renderWeightView()}
             </div>
         </div>
     );
 };
 
-export default ProgressScreen;
+export default ProgressScreen; // Renamed from ReportsScreen

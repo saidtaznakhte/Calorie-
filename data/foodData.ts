@@ -51,6 +51,7 @@ export const popularFoods: FoodSearchResult[] = [
   { name: 'Black Beans (1 cup, cooked)', description: 'High in fiber and protein.', calories: 227, protein: 15, carbs: 41, fats: 0.9, category: FoodCategory.Protein, imageUrl: 'https://images.unsplash.com/photo-1594213988427-0136e09c1356?w=40&h=40&fit=crop&q=80' },
   { name: 'Almonds (1 oz)', description: 'Nutrient-dense nut.', calories: 164, protein: 6, carbs: 6, fats: 14, category: FoodCategory.Protein, imageUrl: 'https://images.unsplash.com/photo-1570077881007-a365b2149cee?w=40&h=40&fit=crop&q=80' },
   { name: 'Peanut Butter (2 tbsp)', description: 'Creamy spread from peanuts.', calories: 190, protein: 7, carbs: 8, fats: 16, category: FoodCategory.Protein, imageUrl: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=40&h=40&fit=crop&q=80' },
+  { name: 'Protein Shake (1 serving)', description: 'Whey protein blend with water/milk.', calories: 150, protein: 25, carbs: 5, fats: 3, category: FoodCategory.Protein, imageUrl: 'https://images.unsplash.com/photo-1628102491629-b7b51e069792?w=40&h=40&fit=crop&q=80' },
   
   // Carbs
   { name: 'White Rice (1 cup, cooked)', description: 'Refined, versatile grain.', calories: 205, protein: 4.3, carbs: 45, fats: 0.4, category: FoodCategory.Carbs, imageUrl: 'https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?w=40&h=40&fit=crop&q=80' },

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { CameraIcon, LockIcon, RefreshIcon } from './Icons';
 
@@ -19,7 +20,7 @@ const PermissionDenied: React.FC<PermissionDeniedProps> = ({ onGoBack, featureNa
       <div className="w-24 h-24 bg-red-100 dark:bg-red-900/50 rounded-full flex items-center justify-center mb-6">
         <CameraIcon className="w-12 h-12 text-red-500" />
       </div>
-      <h2 className="text-2xl font-bold text-text-main dark:text-gray-100 mb-2">Camera Access Is Off</h2>
+      <h2 className="text-2xl font-bold text-text-main dark:text-gray-100 mb-2 font-montserrat">Camera Access Is Off</h2>
       <p className="text-text-light dark:text-gray-400 mb-8 max-w-sm">
         To use {featureName}, you need to grant camera access in your browser's settings.
       </p>

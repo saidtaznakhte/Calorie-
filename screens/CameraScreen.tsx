@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { Page, Meal, MealAnalysis } from '../types';
 import { analyzeMealPhoto } from '../services/geminiService';
@@ -34,30 +35,30 @@ const AnalysisResultOverlay: React.FC<{
             <button onClick={onRetake} className="p-2 -ml-2">
                 <BackIcon className="w-6 h-6 text-text-main dark:text-gray-100" />
             </button>
-            <h1 className="text-xl font-bold text-text-main dark:text-gray-100 mx-auto">Analysis Complete</h1>
+            <h1 className="text-xl font-bold text-text-main dark:text-gray-100 mx-auto font-montserrat">Analysis Complete</h1>
             <div className="w-6"></div>
         </header>
         <div className="flex-1 overflow-y-auto px-4 pb-4">
             <img src={image} alt="Captured meal" className="w-full h-48 object-cover rounded-2xl mb-4" />
             
-            <h2 className="text-2xl font-bold text-text-main dark:text-gray-50 mb-1">{result.name}</h2>
+            <h2 className="text-2xl font-bold text-text-main dark:text-gray-50 mb-1 font-montserrat">{result.name}</h2>
             <p className="text-5xl font-extrabold text-primary mb-4">{result.calories} <span className="text-2xl font-semibold text-text-light dark:text-gray-400">cal</span></p>
 
             <div className="grid grid-cols-3 gap-3 mb-4">
-                <NutrientPill label="Protein" value={result.protein} unit="grams" color="text-red-500" />
-                <NutrientPill label="Carbs" value={result.carbs} unit="grams" color="text-yellow-500" />
-                <NutrientPill label="Fats" value={result.fats} unit="grams" color="text-blue-500" />
+                <NutrientPill label="Protein" value={result.protein} unit="grams" color="text-protein" />
+                <NutrientPill label="Carbs" value={result.carbs} unit="grams" color="text-carbs" />
+                <NutrientPill label="Fats" value={result.fats} unit="grams" color="text-fats" />
             </div>
 
             {result.portionSuggestion && (
                  <div className="bg-primary-light dark:bg-primary/20 p-4 rounded-xl mb-4">
-                    <h3 className="font-bold text-primary mb-1 text-sm">💡 Portion Suggestion</h3>
+                    <h3 className="font-bold text-primary mb-1 text-sm font-montserrat">💡 Portion Suggestion</h3>
                     <p className="text-sm text-text-main dark:text-gray-200">{result.portionSuggestion}</p>
                 </div>
             )}
             
             <div className="bg-light-gray dark:bg-gray-800 p-4 rounded-xl">
-                 <h3 className="font-bold text-text-main dark:text-gray-200 mb-2 text-sm">Detailed Breakdown</h3>
+                 <h3 className="font-bold text-text-main dark:text-gray-200 mb-2 text-sm font-montserrat">Detailed Breakdown</h3>
                  <div className="grid grid-cols-3 gap-x-4 text-center">
                      <div>
                          <p className="font-semibold dark:text-gray-50">{result.fiber ?? 'N/A'}</p>
@@ -172,13 +173,14 @@ const CameraScreen: React.FC = () => {
     setError(null);
 
     const video = videoRef.current;
-    const canvas = canvasRef.current;
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const context = canvas.getContext('2d');
-    context?.drawImage(video, 0, 0, canvas.width, canvas.height);
+    // FIX: Use canvasRef.current directly to avoid block-scoped variable error.
+    const canvasElement = canvasRef.current;
+    canvasElement.width = video.videoWidth;
+    canvasElement.height = video.videoHeight;
+    const context = canvasElement.getContext('2d');
+    context?.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
 
-    const imageDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+    const imageDataUrl = canvasElement.toDataURL('image/jpeg', 0.9);
     setCapturedImage(imageDataUrl);
     const base64Image = imageDataUrl.split(',')[1];
     
@@ -228,7 +230,7 @@ const CameraScreen: React.FC = () => {
     <div className="w-full h-full bg-black flex flex-col items-center justify-center relative text-white">
       {isLoading && (
         <div className="absolute inset-0 bg-black bg-opacity-70 flex flex-col items-center justify-center z-20 transition-opacity duration-300">
-            <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-16 h-16 border-4 border-white border-t-primary rounded-full animate-spin"></div>
             <p className="mt-4 text-lg text-center px-4 transition-opacity duration-300">{loadingMessage}</p>
         </div>
       )}
