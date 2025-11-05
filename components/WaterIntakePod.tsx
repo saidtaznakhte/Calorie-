@@ -1,6 +1,7 @@
+
 import React from 'react';
-import { WaterIcon, PlusIcon, MinusIcon, RefreshIcon } from './Icons'; // Import necessary icons
-import { useAppContext } from '../contexts/AppContext';
+import { WaterIcon, PlusIcon, MinusIcon, RefreshIcon } from './Icons.js'; // Import necessary icons
+import { useAppContext } from '../contexts/AppContext.js';
 
 interface WaterIntakePodProps {
   currentIntake: number;

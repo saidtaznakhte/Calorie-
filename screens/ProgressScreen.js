@@ -1,16 +1,15 @@
 
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { Meal, Activity, Theme } from '../types.js';
 import { toYYYYMMDD, formatDate } from '../utils/dateUtils.js';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Legend } from 'recharts';
 import { useAppContext } from '../contexts/AppContext.js';
 import { formatWeight, getDisplayWeight } from '../utils/units.js';
 import { getAIPersonalizedSuggestion } from '../services/geminiService.js';
-import { BarChartIcon } from '../components/Icons.js'; // Import BarChartIcon for placeholder
-import usePullToRefresh from '../hooks/usePullToRefresh.js';
+import { BarChartIcon } from '../components/Icons.js';
+import { usePullToRefresh } from '../hooks/usePullToRefresh.js';
 import PullToRefreshIndicator from '../components/PullToRefreshIndicator.js';
-import ProgressSkeleton from '../components/ProgressSkeleton.js'; // Updated to relative import
+import ProgressSkeleton from '../components/ProgressSkeleton.js';
 
 const StatCard = ({ label, value, children }) => (
     React.createElement("div", { className: "bg-card dark:bg-dark-card p-4 rounded-2xl flex-1 shadow-sm" },
@@ -44,7 +43,7 @@ const AISuggestionCard = ({ suggestions, isLoading, error, onGenerate, initialSu
     return (
         React.createElement("div", { className: "bg-card dark:bg-dark-card p-4 rounded-2xl shadow-sm" },
             React.createElement("h2", { className: "text-lg font-semibold text-text-main dark:text-dark-text-main mb-4 flex items-center font-montserrat" },
-                "\u{1F4A1} AI-Powered Insights"
+                "💡 AI-Powered Insights"
             ),
             isLoading ? (
                 React.createElement("div", { className: "flex items-center justify-center h-24" },
@@ -64,7 +63,7 @@ const AISuggestionCard = ({ suggestions, isLoading, error, onGenerate, initialSu
                         React.createElement("ul", { className: "space-y-3" },
                             displaySuggestions.map((s, i) => (
                                 React.createElement("li", { key: i, className: "flex items-start" },
-                                    React.createElement("span", { className: "text-primary mr-3 mt-1" }, "\u2713"),
+                                    React.createElement("span", { className: "text-primary mr-3 mt-1" }, "✓"),
                                     React.createElement("p", { className: "text-text-main dark:text-dark-text-main text-sm" }, s)
                                 )
                             ))
@@ -79,8 +78,8 @@ const AISuggestionCard = ({ suggestions, isLoading, error, onGenerate, initialSu
                             hasGenerated ? 'Re-generate Insights' : 'Generate Insights'
                         )
                     )
-                </React.Fragment>
-            )}
+                )
+            )
         )
     );
 };
@@ -91,7 +90,7 @@ const initialAiSuggestions = [
     "Try incorporating a short 15-minute walk after dinner; it can help with digestion and boost your daily activity."
 ];
 
-const ProgressScreen = () => { // Renamed from ReportsScreen
+const ProgressScreen = () => {
     const { 
         loggedMeals, 
         theme,
@@ -110,23 +109,20 @@ const ProgressScreen = () => { // Renamed from ReportsScreen
     const [aiSuggestions, setAiSuggestions] = useState(null);
     const [isGenerating, setIsGenerating] = useState(false);
     const [suggestionError, setSuggestionError] = useState(null);
-    const [hasGeneratedInsights, setHasGeneratedInsights] = useState(false); // New state to track if user has initiated generation
-    const [isLoadingPage, setIsLoadingPage] = useState(true); // For skeleton loading of entire page data
+    const [hasGeneratedInsights, setHasGeneratedInsights] = useState(false);
+    const [isLoadingPage, setIsLoadingPage] = useState(true);
 
-    // Pull-to-refresh hook
     const handleRefresh = async () => {
         setIsLoadingPage(true);
-        // Simulate a network request or data refetch
         await new Promise(resolve => setTimeout(resolve, 1500)); 
         setIsLoadingPage(false);
-        setHasGeneratedInsights(false); // Reset AI suggestions on refresh
+        setHasGeneratedInsights(false);
         setAiSuggestions(null);
         showToast({ text: "Progress refreshed!", type: 'info' });
     };
     const { isRefreshing, handleTouchStart, handleTouchMove, handleTouchEnd, scrollRef } = usePullToRefresh(handleRefresh);
 
     useEffect(() => {
-        // Simulate initial data load for the page
         const timer = setTimeout(() => {
             setIsLoadingPage(false);
         }, 1000);
@@ -145,8 +141,8 @@ const ProgressScreen = () => { // Renamed from ReportsScreen
     const handleGenerateSuggestion = async () => {
         setIsGenerating(true);
         setSuggestionError(null);
-        setAiSuggestions(null); // Clear previous suggestions
-        setHasGeneratedInsights(true); // Mark that user has initiated generation
+        setAiSuggestions(null);
+        setHasGeneratedInsights(true);
 
         try {
             const endDate = new Date();
@@ -280,7 +276,6 @@ const ProgressScreen = () => { // Renamed from ReportsScreen
             goal: getDisplayWeight(goalWeight, profile.unitSystem)
         }));
 
-        // Calculate yMin and yMax for the chart, adding padding
         const allWeights = chartData.flatMap(d => [d.weight, d.goal]);
         const calculatedYMin = allWeights.length > 0 ? Math.min(...allWeights) - 5 : 0;
         const calculatedYMax = allWeights.length > 0 ? Math.max(...allWeights) + 5 : 100;
@@ -319,7 +314,6 @@ const ProgressScreen = () => { // Renamed from ReportsScreen
                     )
                 )
             ),
-
             React.createElement("div", { className: "bg-card dark:bg-dark-card rounded-2xl p-4 shadow-sm" },
                 React.createElement("h2", { className: "text-lg font-semibold text-text-main dark:text-dark-text-main mb-4 font-montserrat" }, "Macronutrient Distribution"),
                 nutritionData.macroPieData.length > 0 ? (
@@ -356,11 +350,7 @@ const ProgressScreen = () => { // Renamed from ReportsScreen
         React.createElement(React.Fragment, null,
              React.createElement("div", { className: "bg-card dark:bg-dark-card rounded-2xl p-4 shadow-sm" },
                 React.createElement("h2", { className: "text-lg font-semibold text-text-main dark:text-dark-text-main mb-4 font-montserrat" }, "Calories Burned"),
-                React.createElement("p", { className: "text-3xl font-bold text-secondary" },
-                    activityData.totalCaloriesBurned,
-                    " ",
-                    React.createElement("span", { className: "text-xl font-medium text-text-light dark:text-dark-text-light" }, "kcal")
-                ),
+                React.createElement("p", { className: "text-3xl font-bold text-secondary" }, activityData.totalCaloriesBurned, " ", React.createElement("span", { className: "text-xl font-medium text-text-light dark:text-dark-text-light" }, "kcal")),
                 React.createElement("div", { style: { width: '100%', height: 250 } },
                     React.createElement(ResponsiveContainer, null,
                         React.createElement(BarChart, { data: activityData.chartData, margin: { top: 20, right: 10, left: -20, bottom: 5 } },
@@ -393,7 +383,6 @@ const ProgressScreen = () => { // Renamed from ReportsScreen
                     React.createElement(ResponsiveContainer, null,
                         React.createElement(LineChart, { data: weightData.chartData, margin: { top: 20, right: 10, left: -20, bottom: 0 } },
                             React.createElement(XAxis, { dataKey: "date", fontSize: 12, tickLine: false, axisLine: false, stroke: axisColor }),
-                            /* FIX: Replaced string literal arithmetic with pre-calculated numerical values for YAxis domain. */
                             React.createElement(YAxis, { domain: [weightData.yMin, weightData.yMax], fontSize: 12, tickLine: false, axisLine: false, stroke: axisColor, unit: profile.unitSystem === 'metric' ? ' kg' : ' lbs' }),
                             React.createElement(Tooltip, { contentStyle: tooltipStyle }),
                             React.createElement(Line, { type: "monotone", dataKey: "weight", name: "Weight", stroke: "#00C795", strokeWidth: 2 }),
@@ -411,7 +400,7 @@ const ProgressScreen = () => { // Renamed from ReportsScreen
     );
 
     return (
-        React.createElement("div", {
+        React.createElement("div", { 
             className: "p-4 bg-background dark:bg-dark-background min-h-full flex flex-col",
             ref: scrollRef,
             onTouchStart: handleTouchStart,
@@ -439,7 +428,7 @@ const ProgressScreen = () => { // Renamed from ReportsScreen
                     ),
                     
                     React.createElement("div", { className: "space-y-6 animate-fade-in flex-1 overflow-y-auto" },
-                        React.createElement(AISuggestionCard, {
+                        React.createElement(AISuggestionCard, { 
                             suggestions: aiSuggestions,
                             isLoading: isGenerating,
                             error: suggestionError,
@@ -453,7 +442,7 @@ const ProgressScreen = () => { // Renamed from ReportsScreen
                         view === 'Weight' && renderWeightView()
                     )
                 )
-            )}
+            )
         )
     );
 };

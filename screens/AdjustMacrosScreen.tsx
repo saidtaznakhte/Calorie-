@@ -1,8 +1,9 @@
+
 import React, { useState, useMemo } from 'react';
-import { Page, MacroGoals } from '../types';
-import { BackIcon } from '../components/Icons';
-import { useAppContext } from '../contexts/AppContext';
-import { calculateGoals } from '../utils/nutritionUtils';
+import { Page, MacroGoals } from '../types.js';
+import { BackIcon } from '../components/Icons.js';
+import { useAppContext } from '../contexts/AppContext.js';
+import { calculateGoals } from '../utils/nutritionUtils.js';
 
 const MacroSlider: React.FC<{
     label: string;

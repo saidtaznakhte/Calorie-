@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { CheckCircleIcon } from './Icons'; // Using CheckCircleIcon for achievement message
+import { CheckCircleIcon } from './Icons.js'; // Using CheckCircleIcon for achievement message
 
 const ConfettiPiece: React.FC<{ style: React.CSSProperties }> = ({ style }) => (
   <div

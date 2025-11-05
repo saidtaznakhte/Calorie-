@@ -1,6 +1,6 @@
 import React from 'react';
-import { useAppContext } from '../contexts/AppContext';
-import { PlusIcon } from '../components/Icons';
+import { useAppContext } from '../contexts/AppContext.js';
+import { PlusIcon } from '../components/Icons.js';
 
 const WelcomeScreen: React.FC = () => {
     const { users, login, startRegistration, triggerHapticFeedback } = useAppContext();

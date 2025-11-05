@@ -1,8 +1,5 @@
 
-
-import { useState, useRef, useCallback } from 'react';
-// FIX: Added missing React import to resolve "Cannot find namespace 'React'" errors.
-import React from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 
 const SWIPE_THRESHOLD = 50; // Pixels to swipe to trigger delete visibility
 const ANIMATION_DURATION = 200; // ms for the slide animation
@@ -18,7 +15,7 @@ interface SwipeToDeleteHook {
   };
 }
 
-const useSwipeToDelete = (): SwipeToDeleteHook => {
+export const useSwipeToDelete = (): SwipeToDeleteHook => {
   const startX = useRef(0);
   const currentX = useRef(0);
   const elementRef = useRef<HTMLDivElement>(null); // Ref to the swipable element
@@ -87,5 +84,3 @@ const useSwipeToDelete = (): SwipeToDeleteHook => {
 
   return { translateX, showDelete, bind };
 };
-
-export default useSwipeToDelete;

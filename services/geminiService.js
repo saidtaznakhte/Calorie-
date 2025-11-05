@@ -1,5 +1,4 @@
 
-
 import { GoogleGenAI, Type } from "@google/genai";
 import { MealAnalysis, MealType, FoodSearchResult, UserProfile, MacroGoals } from "../types.js";
 
@@ -196,7 +195,8 @@ export const searchFood = async (query) => {
     try {
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
-            contents: { parts: [{ text: `Find nutritional information for "${query}". The user's query might be in English or another language like Arabic. Provide a list of matching food items. The name of the food should be in the same language as the query. Include their calories, protein, carbs, and fats for a standard serving size. Also, provide a URL for a representative image for each item.` }] },
+            // FIX: The 'config' property should be a direct sibling to 'contents'.
+            contents: [{ parts: [{ text: `Find nutritional information for "${query}". The user's query might be in English or another language like Arabic. Provide a list of matching food items. The name of the food should be in the same language as the query. Include their calories, protein, carbs, and fats for a standard serving size. Also, provide a URL for a representative image for each item.` }] }],
             config: {
                 responseMimeType: "application/json",
                 responseSchema: foodSearchSchema,
@@ -267,7 +267,7 @@ export const getAIPersonalizedSuggestion = async (payload) => {
     try {
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
-            contents: { parts: [{ text: prompt }] },
+            contents: [{ parts: [{ text: prompt }] }],
             config: {
                 responseMimeType: "application/json",
                 responseSchema: suggestionSchema,

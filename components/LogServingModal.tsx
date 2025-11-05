@@ -1,8 +1,8 @@
 
 import React, { useState, useMemo } from 'react';
-import { FoodSearchResult, MealType, PreppedMeal, Page } from '../types';
-import { PlusIcon, MinusIcon, BackIcon } from './Icons';
-import { useAppContext } from '../contexts/AppContext';
+import { FoodSearchResult, MealType, PreppedMeal, Page } from '../types.js';
+import { PlusIcon, MinusIcon, BackIcon } from './Icons.js';
+import { useAppContext } from '../contexts/AppContext.js';
 
 interface LogServingModalProps {
   isOpen: boolean;

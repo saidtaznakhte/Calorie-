@@ -1,8 +1,9 @@
+
 import React, { useState } from 'react';
-import { Page, UserProfile, Gender, ActivityLevel, PrimaryGoal, UnitSystem } from '../types';
-import { BackIcon } from '../components/Icons';
-import { useAppContext } from '../contexts/AppContext';
-import { cmToInches, getDisplayHeightCm, getDisplayHeightFt, getDisplayHeightIn } from '../utils/units';
+import { Page, UserProfile, Gender, ActivityLevel, PrimaryGoal, UnitSystem } from '../types.js';
+import { BackIcon } from '../components/Icons.js';
+import { useAppContext } from '../contexts/AppContext.js';
+import { cmToInches, getDisplayHeightCm, getDisplayHeightFt, getDisplayHeightIn } from '../utils/units.js';
 
 const avatars = ['🧑‍🦰', '👩‍🦳', '👨‍🚀', '🦸‍♀️', '🧘‍♂️', '🎨', '🎸', '⚽️'];
 

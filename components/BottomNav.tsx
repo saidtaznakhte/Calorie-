@@ -1,7 +1,8 @@
+
 import React from 'react';
-import { Page } from '../types';
-import { HomeIcon, BookOpenIcon, ProgressIcon, SettingsIcon, PlusIcon } from './Icons'; // Changed BarChartIcon to ProgressIcon
-import { useAppContext } from '../contexts/AppContext';
+import { Page } from '../types.js';
+import { HomeIcon, BookOpenIcon, ProgressIcon, SettingsIcon, PlusIcon } from './Icons.js'; // Changed BarChartIcon to ProgressIcon
+import { useAppContext } from '../contexts/AppContext.js';
 
 interface NavItemProps {
   page: Page;

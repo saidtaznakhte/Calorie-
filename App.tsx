@@ -1,31 +1,30 @@
 
-
 import React from 'react';
-import { Page } from './types';
-import { AppProvider, useAppContext } from './contexts/AppContext';
-import BottomNav from './components/BottomNav';
-import DashboardScreen from './screens/DashboardScreen';
-import LogMealScreen from './screens/LogMealScreen';
-import SettingsScreen from './screens/SettingsScreen';
-import CameraScreen from './screens/CameraScreen';
-import DiaryScreen from './screens/DiaryScreen';
-import ProgressScreen from './screens/ProgressScreen'; // Changed from ReportsScreen
-import AdjustMacrosScreen from './screens/AdjustMacrosScreen';
-import WeightGoalsScreen from './screens/WeightGoalsScreen';
-import WeightHistoryScreen from './screens/WeightHistoryScreen';
-import WaterHistoryScreen from './screens/WaterHistoryScreen';
-import ProfileScreen from './screens/ProfileScreen';
-import BarcodeScannerScreen from './screens/BarcodeScannerScreen';
-import LogActivityScreen from './screens/LogActivityScreen';
-import WelcomeScreen from './screens/WelcomeScreen';
-import OnboardingScreen from './screens/OnboardingScreen';
+import { Page } from './types.js';
+import { AppProvider, useAppContext } from './contexts/AppContext.js';
+import BottomNav from './components/BottomNav.js';
+import DashboardScreen from './screens/DashboardScreen.js';
+import LogMealScreen from './screens/LogMealScreen.js';
+import SettingsScreen from './screens/SettingsScreen.js';
+import CameraScreen from './screens/CameraScreen.js';
+import DiaryScreen from './screens/DiaryScreen.js';
+import ProgressScreen from './screens/ProgressScreen.js'; // Changed from ReportsScreen
+import AdjustMacrosScreen from './screens/AdjustMacrosScreen.js';
+import WeightGoalsScreen from './screens/WeightGoalsScreen.js';
+import WeightHistoryScreen from './screens/WeightHistoryScreen.js';
+import WaterHistoryScreen from './screens/WaterHistoryScreen.js';
+import ProfileScreen from './screens/ProfileScreen.js';
+import BarcodeScannerScreen from './screens/BarcodeScannerScreen.js';
 // FIX: Changed ManualLogScreen import to a named import.
+import { LogActivityScreen } from './screens/LogActivityScreen.js';
+import WelcomeScreen from './screens/WelcomeScreen.js';
+import OnboardingScreen from './screens/OnboardingScreen.js';
 // FIX: Changed ManualLogScreen import from a named import to a default import.
-import ManualLogScreen from './screens/ManualLogScreen';
-import MealPrepCreatorScreen from './screens/MealPrepCreatorScreen';
-import MealDetailScreen from './screens/MealDetailScreen';
-import RemindersModal from './components/RemindersModal';
-import Toast from './components/Toast'; // Import Toast component
+import ManualLogScreen from './screens/ManualLogScreen.js';
+import MealPrepCreatorScreen from './screens/MealPrepCreatorScreen.js';
+import MealDetailScreen from './components/MealDetailScreen.js';
+import RemindersModal from './components/RemindersModal.js';
+import Toast from './components/Toast.js'; // Import Toast component
 
 const MainApp: React.FC = () => {
   const { page, isRemindersModalOpen, currentUser, closeRemindersModal, handleRemindersUpdate, toastMessage } = useAppContext();

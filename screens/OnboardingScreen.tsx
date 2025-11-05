@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import { UserProfile, Gender, ActivityLevel, PrimaryGoal, UnitSystem } from '../types';
-import { useAppContext } from '../contexts/AppContext';
-import { BackIcon } from '../components/Icons';
-import { cmToInches, inchesToCm, kgToLbs, lbsToKg } from '../utils/units';
+import { UserProfile, Gender, ActivityLevel, PrimaryGoal, UnitSystem } from '../types.js';
+import { useAppContext } from '../contexts/AppContext.js';
+import { BackIcon } from '../components/Icons.js';
+import { cmToInches, inchesToCm, kgToLbs, lbsToKg } from '../utils/units.js';
 
 const avatars = ['🧑‍🦰', '👩‍🦳', '👨‍🚀', '🦸‍♀️', '🧘‍♂️', '🎨', '🎸', '⚽️'];
 

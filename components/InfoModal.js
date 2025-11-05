@@ -1,13 +1,15 @@
 
+
 import React from 'react';
 /* eslint-disable react/react-in-jsx-scope */ 
 import { useAppContext } from '../contexts/AppContext.js';
 
-interface InfoModalProps {
-  title: string;
-  onClose: () => void;
-  children: React.ReactNode;
-}
+// Removed: TypeScript interface definition
+// interface InfoModalProps {
+//   title: string;
+//   onClose: () => void;
+//   children: React.ReactNode;
+// }
 
 const InfoModal = ({ title, onClose, children }) => {
   const { triggerHapticFeedback } = useAppContext();

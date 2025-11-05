@@ -1,15 +1,13 @@
 
 
-
 import React, { useState, useMemo } from 'react';
-import { Page, Meal, MealType } from '../types.js';
-// FIX: Removed duplicate import alias for ChevronRightIcon.
-import { ChevronLeftIcon, ChevronRightIcon, PlusIcon, BellIcon, TrashIcon } from '../components/Icons.js';
+import { Page, MealType } from '../types.js';
+import { ChevronLeftIcon, ChevronRightIcon, BellIcon, TrashIcon } from '../components/Icons.js';
 import { toYYYYMMDD, formatDate } from '../utils/dateUtils.js';
 import { useAppContext } from '../contexts/AppContext.js';
-import usePullToRefresh from '@/hooks/usePullToRefresh.js';
-import PullToRefreshIndicator from '@/components/PullToRefreshIndicator.js';
-import useSwipeToDelete from '@/hooks/useSwipeToDelete.js'; // Import the new hook
+import { usePullToRefresh } from '../hooks/usePullToRefresh.js';
+import PullToRefreshIndicator from '../components/PullToRefreshIndicator.js';
+import { useSwipeToDelete } from '../hooks/useSwipeToDelete.js';
 
 const mealIcons = {
     [MealType.Breakfast]: '🥞',
@@ -21,13 +19,12 @@ const mealIcons = {
 const DiaryScreen = () => {
     const { navigateTo, loggedMeals, viewMealDetail, handleMealRemoved, openRemindersModal, triggerHapticFeedback, showToast } = useAppContext();
     const [selectedDate, setSelectedDate] = useState(new Date());
-    const [isLoadingData, setIsLoadingData] = useState(false); // For simulating refresh
+    const [isLoadingData, setIsLoadingData] = useState(false);
 
-    // Pull-to-refresh hook
     const handleRefresh = async () => {
         setIsLoadingData(true);
         await new Promise(resolve => setTimeout(resolve, 1500)); 
-        setSelectedDate(new Date()); // Reset date to today or refetch current day's data
+        setSelectedDate(new Date());
         setIsLoadingData(false);
         showToast({ text: "Diary refreshed!", type: 'info' });
     };
@@ -107,22 +104,19 @@ const DiaryScreen = () => {
                     ),
                      React.createElement("div", null,
                         React.createElement("p", { className: "font-bold text-lg text-protein" },
-                            summary.protein,
-                            "g"
+                            summary.protein, "g"
                         ),
                         React.createElement("p", { className: "text-xs text-text-light dark:text-dark-text-light" }, "Protein")
                     ),
                      React.createElement("div", null,
                         React.createElement("p", { className: "font-bold text-lg text-carbs" },
-                            summary.carbs,
-                            "g"
+                            summary.carbs, "g"
                         ),
                         React.createElement("p", { className: "text-xs text-text-light dark:text-dark-text-light" }, "Carbs")
                     ),
                      React.createElement("div", null,
                         React.createElement("p", { className: "font-bold text-lg text-fats" },
-                            summary.fats,
-                            "g"
+                            summary.fats, "g"
                         ),
                         React.createElement("p", { className: "text-xs text-text-light dark:text-dark-text-light" }, "Fats")
                     )
@@ -149,8 +143,7 @@ const DiaryScreen = () => {
                                         React.createElement("h2", { className: "text-lg font-semibold text-text-main dark:text-dark-text-main font-montserrat" }, type)
                                     ),
                                     React.createElement("span", { className: "font-semibold text-text-main dark:text-dark-text-main" },
-                                        totalCalories,
-                                        " cal"
+                                        totalCalories, " cal"
                                     )
                                 ),
                                 React.createElement("div", { className: "space-y-2 divide-y divide-light-gray dark:divide-dark-border" },
@@ -168,18 +161,11 @@ const DiaryScreen = () => {
                     })
                 )
             )
-
-            /* Removed the fixed bottom-24 right-8 FAB as logging is now handled by BottomNav */
         )
     );
 };
 
-// New component to encapsulate swipe functionality
-const MealItemWithSwipe = ({
-    meal,
-    onViewDetail,
-    onDelete,
-}) => {
+const MealItemWithSwipe = ({ meal, onViewDetail, onDelete }) => {
     const { translateX, bind, showDelete } = useSwipeToDelete();
     const { triggerHapticFeedback } = useAppContext();
 
@@ -210,8 +196,8 @@ const MealItemWithSwipe = ({
             ),
             React.createElement("div", {
                 ...bind(),
-                style: { transform: `translateX(${translateX}px)` },
-                className: "flex items-center w-full text-left transition-transform duration-200 bg-card dark:bg-dark-card rounded-lg"
+                style: { transform: `translateX(${translateX}px)`, transition: 'transform 0.2s ease-out' },
+                className: "flex items-center w-full text-left bg-card dark:bg-dark-card rounded-lg"
             },
                 React.createElement("button", {
                     onClick: handleViewClick,
@@ -220,8 +206,7 @@ const MealItemWithSwipe = ({
                     React.createElement("div", { className: "flex-1" },
                         React.createElement("p", { className: "font-medium text-text-main dark:text-dark-text-main" }, meal.name),
                         React.createElement("p", { className: "text-sm text-text-light dark:text-dark-text-light" },
-                            meal.calories,
-                            " cal"
+                            meal.calories, " cal"
                         )
                     ),
                     React.createElement(ChevronRightIcon, { className: "w-5 h-5 text-medium-gray" })

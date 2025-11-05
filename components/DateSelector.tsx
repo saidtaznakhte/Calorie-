@@ -1,6 +1,7 @@
+
 import React from 'react';
-import { toYYYYMMDD, formatDate, isToday as checkIsToday } from '../utils/dateUtils';
-import { useAppContext } from '../contexts/AppContext';
+import { toYYYYMMDD, formatDate, isToday as checkIsToday } from '../utils/dateUtils.js';
+import { useAppContext } from '../contexts/AppContext.js';
 
 interface DateSelectorProps {
   selectedDate: Date;

@@ -1,9 +1,8 @@
-
 import React, { useState, useMemo, useEffect } from 'react';
-import { Page, FoodSearchResult, PreppedMeal } from '../types';
-import { useAppContext } from '../contexts/AppContext';
-import { BackIcon, PlusIcon, TrashIcon, SearchIcon, ChefHatIcon } from '../components/Icons';
-import { searchFood } from '../services/geminiService';
+import { Page, FoodSearchResult, PreppedMeal } from '../types.js';
+import { useAppContext } from '../contexts/AppContext.js';
+import { BackIcon, PlusIcon, TrashIcon, SearchIcon, ChefHatIcon } from '../components/Icons.js';
+import { searchFood } from '../services/geminiService.js';
 
 const NutrientDisplay: React.FC<{ label: string; value: number; unit: string; color: string }> = ({ label, value, unit, color }) => (
     <div className="text-center">
@@ -194,4 +193,3 @@ const MealPrepCreatorScreen: React.FC = () => {
 };
 
 export default MealPrepCreatorScreen;
-    

@@ -13,7 +13,7 @@ interface PullToRefreshHook {
   scrollRef: React.RefObject<HTMLElement>;
 }
 
-const usePullToRefresh = (onRefresh: () => Promise<void>): PullToRefreshHook => {
+export const usePullToRefresh = (onRefresh: () => Promise<void>): PullToRefreshHook => {
   const scrollRef = useRef<HTMLElement>(null);
   const startY = useRef(0);
   const currentY = useRef(0);
@@ -122,5 +122,3 @@ const usePullToRefresh = (onRefresh: () => Promise<void>): PullToRefreshHook => 
 
   return { isRefreshing, handleTouchStart, handleTouchMove, handleTouchEnd, scrollRef };
 };
-
-export default usePullToRefresh;

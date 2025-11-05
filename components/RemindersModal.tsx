@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { ReminderSettings, ReminderType } from '../types';
-import { BellIcon, ClockIcon } from './Icons';
+import { ReminderSettings, ReminderType } from '../types.js';
+import { BellIcon, ClockIcon } from './Icons.js';
 
 interface RemindersModalProps {
   isOpen: boolean;

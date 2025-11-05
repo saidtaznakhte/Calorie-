@@ -1,20 +1,22 @@
 
+
+
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Page, MealType, Meal, FoodSearchResult } from '../types';
-import { BellIcon, ChevronLeftIcon, ChevronRightIcon, ChefHatIcon, CalendarIcon, CheckCircleIcon, SunIcon, CloudRainIcon, CloudSnowIcon } from '../components/Icons'; // Added CheckCircleIcon, SunIcon, CloudRainIcon, CloudSnowIcon
-import { toYYYYMMDD, formatDate, isToday, isYesterday } from '../utils/dateUtils';
-import { useAppContext } from '../contexts/AppContext';
-import ConcentricProgress from '../components/ConcentricProgress';
-import WaterIntakePod from '../components/WaterIntakePod';
-import DateSelector from '../components/DateSelector';
-import DailySummaryCard from '../components/DailySummaryCard';
-import StreakCounter from '../components/StreakCounter';
-import CalendarModal from '../components/CalendarModal';
-import ConfettiOverlay from '../components/ConfettiOverlay'; // Import new ConfettiOverlay
-import WeatherOverlay from '../components/WeatherOverlay'; // Import new WeatherOverlay
-import usePullToRefresh from '@/hooks/usePullToRefresh'; // Reverted to bare import
-import PullToRefreshIndicator from '@/components/PullToRefreshIndicator'; // Reverted to bare import
-import DashboardSkeleton from '@/components/DashboardSkeleton.tsx'; // Import DashboardSkeleton
+import { Page, MealType, Meal, FoodSearchResult } from '../types.js';
+import { BellIcon, ChevronLeftIcon, ChevronRightIcon, ChefHatIcon, CalendarIcon, CheckCircleIcon, SunIcon, CloudRainIcon, CloudSnowIcon } from '../components/Icons.js'; // Added CheckCircleIcon, SunIcon, CloudRainIcon, CloudSnowIcon
+import { toYYYYMMDD, formatDate, isToday, isYesterday } from '../utils/dateUtils.js';
+import { useAppContext } from '../contexts/AppContext.js';
+import ConcentricProgress from '../components/ConcentricProgress.js';
+import WaterIntakePod from '../components/WaterIntakePod.js';
+import DateSelector from '../components/DateSelector.js';
+import DailySummaryCard from '../components/DailySummaryCard.js';
+import StreakCounter from '../components/StreakCounter.js';
+import CalendarModal from '../components/CalendarModal.js';
+import ConfettiOverlay from '../components/ConfettiOverlay.js'; // Import new ConfettiOverlay
+import WeatherOverlay from '../components/WeatherOverlay.js'; // Import new WeatherOverlay
+import { usePullToRefresh } from '../hooks/usePullToRefresh.js'; 
+import PullToRefreshIndicator from '../components/PullToRefreshIndicator.js'; // Updated to relative import
+import DashboardSkeleton from '../components/DashboardSkeleton.js'; // Updated to relative import
 
 const mealIcons: Record<MealType, string> = {
     [MealType.Breakfast]: '🥞',
@@ -123,7 +125,6 @@ const DashboardScreen: React.FC = () => {
 
     const mealsByType = useMemo(() => {
       return mealsForDay.reduce((acc, meal) => {
-        // FIX: Corrected typo `meal[Type]` to `meal.type`
         (acc[meal.type] = acc[meal.type] || []).push(meal);
         return acc;
       }, {} as Record<MealType, (Meal & { originalIndex: number })[]>);
@@ -327,7 +328,7 @@ const DashboardScreen: React.FC = () => {
                                     <MealSummaryCard mealType={MealType.Breakfast} meals={mealsByType[MealType.Breakfast] || []} onMealClick={viewMealDetail} />
                                     <MealSummaryCard mealType={MealType.Lunch} meals={mealsByType[MealType.Lunch] || []} onMealClick={viewMealDetail} />
                                     <MealSummaryCard mealType={MealType.Dinner} meals={mealsByType[MealType.Dinner] || []} onMealClick={viewMealDetail} />
-                                    <MealSummaryCard mealType={MealType.Snacks} meals={mealsByType[MealType.Snacks] || []} onMealClick={viewMealDetail} />
+                                    <MealSummaryCard mealType={MealType.Snacks} mealsByType[MealType.Snacks] || []} onMealClick={viewMealDetail} />
                                 </div>
                             ) : (
                                 <div className="text-center py-8 px-4 bg-card dark:bg-dark-card rounded-2xl shadow-sm">

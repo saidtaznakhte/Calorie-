@@ -1,8 +1,9 @@
+
 import React, { useState, useMemo, useEffect } from 'react';
-import { Page, ActivityType, CustomActivity } from '../types';
-import { BackIcon, PlusIcon } from '../components/Icons';
-import { useAppContext } from '../contexts/AppContext';
-import { toYYYYMMDD } from '../utils/dateUtils';
+import { Page, ActivityType, CustomActivity } from '../types.js';
+import { BackIcon, PlusIcon } from '../components/Icons.js';
+import { useAppContext } from '../contexts/AppContext.js';
+import { toYYYYMMDD } from '../utils/dateUtils.js';
 
 const defaultActivityOptions = [
     { type: ActivityType.Running, emoji: '🏃', met: 9.8 },
@@ -34,7 +35,8 @@ const ActivityButton: React.FC<{
 );
 }
 
-const LogActivityScreen: React.FC = () => {
+// FIX: Changed LogActivityScreen to a named export.
+export const LogActivityScreen: React.FC = () => {
     const { navigateTo, handleActivityLogged, currentWeight, customActivities, handleCustomActivityAdd, triggerHapticFeedback } = useAppContext();
     const [selectedActivity, setSelectedActivity] = useState<CustomActivity | null>(null);
     const [hours, setHours] = useState('');
@@ -207,5 +209,3 @@ const LogActivityScreen: React.FC = () => {
         </div>
     );
 };
-
-export default LogActivityScreen;

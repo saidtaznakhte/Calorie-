@@ -1,10 +1,11 @@
+
 import React from 'react';
-import { Page, Theme } from '../types';
-import { BackIcon } from '../components/Icons';
+import { Page, Theme } from '../types.js';
+import { BackIcon } from '../components/Icons.js';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Label } from 'recharts';
-import { formatDate } from '../utils/dateUtils';
-import { useAppContext } from '../contexts/AppContext';
-import { getDisplayWeight, formatWeight } from '../utils/units';
+import { formatDate } from '../utils/dateUtils.js';
+import { useAppContext } from '../contexts/AppContext.js';
+import { getDisplayWeight, formatWeight } from '../utils/units.js';
 
 const WeightHistoryScreen: React.FC = () => {
     const { navigateTo, weightHistory: history, theme, profile, triggerHapticFeedback } = useAppContext();
@@ -72,7 +73,7 @@ const WeightHistoryScreen: React.FC = () => {
                 <div className="space-y-2">
                     {history.length > 0 ? formattedHistory.slice().reverse().map((entry, index) => (
                         <div key={index} className="flex justify-between items-center py-2 border-b border-light-gray dark:border-dark-border last:border-b-0">
-                           <p className="text-text-main dark:text-dark-text-main">{formatDate(new Date(entry.date), { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+                           <p className="text-text-main dark:text-dark-text-main">{formatDate(new Date(entry.date + 'T00:00:00'), { weekday: 'long', month: 'long', day: 'numeric' })}</p>
                            <p className="font-bold text-text-main dark:text-dark-text-main">{formatWeight(entry.weight, unitSystem)}</p>
                         </div>
                     )) : (

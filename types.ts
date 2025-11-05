@@ -1,5 +1,4 @@
 
-
 export enum Page {
   Dashboard = 'DASHBOARD',
   Diary = 'DIARY',

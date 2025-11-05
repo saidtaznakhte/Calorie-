@@ -1,8 +1,8 @@
 
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { ChevronLeftIcon, ChevronRightIcon, XIcon, CalendarIcon as CalendarIconSvg } from './Icons';
-import { toYYYYMMDD, formatDate } from '../utils/dateUtils';
+import { ChevronLeftIcon, ChevronRightIcon, XIcon, CalendarIcon as CalendarIconSvg } from './Icons.js';
+import { toYYYYMMDD, formatDate } from '../utils/dateUtils.js';
 
 interface CalendarModalProps {
   isOpen: boolean;

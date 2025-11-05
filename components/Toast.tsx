@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, useRef } from 'react';
-import { CheckCircleIcon, XCircleIcon } from './Icons'; // Import icons
+import { CheckCircleIcon, XCircleIcon } from './Icons.js'; // Import icons
 
 interface ToastProps {
   message: { text: string; type?: 'success' | 'error' | 'info' } | null;
@@ -69,4 +69,3 @@ const Toast: React.FC<ToastProps> = ({ message }) => {
 };
 
 export default Toast;
-    

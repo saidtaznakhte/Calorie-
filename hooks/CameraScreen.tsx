@@ -1,11 +1,13 @@
+
+
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { Page, Meal, MealAnalysis } from '../types';
-import { analyzeMealPhoto } from '../services/geminiService';
-import { BackIcon } from '../components/Icons';
-import { toYYYYMMDD } from '../utils/dateUtils';
-import { useAppContext } from '../contexts/AppContext';
-import RequestCameraAccess from '../components/RequestCameraAccess';
-import PermissionDenied from '../components/PermissionDenied';
+import { Page, Meal, MealAnalysis } from '../types.js';
+import { analyzeMealPhoto } from '../services/geminiService.js';
+import { BackIcon } from '../components/Icons.js';
+import { toYYYYMMDD } from '../utils/dateUtils.js';
+import { useAppContext } from '../contexts/AppContext.js';
+import RequestCameraAccess from '../components/RequestCameraAccess.js';
+import PermissionDenied from '../components/PermissionDenied.js';
 
 const loadingMessages = [
     "Analyzing textures and colors...",

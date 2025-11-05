@@ -1,8 +1,9 @@
 
+
 import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode, useMemo, useRef } from 'react';
-import { Page, Meal, Theme, MacroGoals, WeightEntry, UserProfile, FoodSearchResult, Activity, UserData, Gender, ActivityLevel, PrimaryGoal, UnitSystem, PreppedMeal, MealType, ThemePreference, CustomActivity, ReminderSettings, ReminderType } from '../types';
-import { toYYYYMMDD } from '../utils/dateUtils';
-import { calculateGoals } from '../utils/nutritionUtils';
+import { Page, Meal, Theme, MacroGoals, WeightEntry, UserProfile, FoodSearchResult, Activity, UserData, Gender, ActivityLevel, PrimaryGoal, UnitSystem, PreppedMeal, MealType, ThemePreference, CustomActivity, ReminderSettings, ReminderType } from '../types.js';
+import { toYYYYMMDD } from '../utils/dateUtils.js';
+import { calculateGoals } from '../utils/nutritionUtils.js';
 
 // A custom hook to manage state in localStorage
 function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((prevState: T) => T)) => void] {
@@ -477,7 +478,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     waterIntakeHistory: currentUser?.waterIntakeHistory || {},
     waterGoal: currentUser?.waterGoal || 90,
     stepsHistory: currentUser?.stepsHistory || {},
-    stepsGoal: currentUser?.stepsGoal || 10000,
+    stepsGoal: 10000,
     dayStreak: currentUser?.dayStreak || 0,
     favoriteFoods: currentUser?.favoriteFoods || [],
     preppedMeals: currentUser?.preppedMeals || [],

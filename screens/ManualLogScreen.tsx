@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
-import { Page, Meal, MealType } from '../types';
-import { BackIcon } from '../components/Icons';
-import { useAppContext } from '../contexts/AppContext';
-import { toYYYYMMDD } from '../utils/dateUtils';
+import { Page, Meal, MealType } from '../types.js';
+import { BackIcon } from '../components/Icons.js';
+import { useAppContext } from '../contexts/AppContext.js';
+import { toYYYYMMDD } from '../utils/dateUtils.js';
 
 const InputField: React.FC<{
     label: string;

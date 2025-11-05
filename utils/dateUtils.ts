@@ -8,7 +8,8 @@ export const getDayOfWeek = (date: Date): string => {
     return days[date.getDay()];
 }
 
-export const formatDate = (date: Date, options: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric' }): string => {
+// FIX: Widened the type of `options` to `Intl.DateTimeFormatOptions` to allow properties like `weekday` and `year`, resolving multiple TypeScript errors across the application.
+export const formatDate = (date: Date, options: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric' }) => {
     return date.toLocaleDateString('en-US', options);
 }
 
@@ -24,5 +25,5 @@ export const isYesterday = (date: Date): boolean => {
   yesterday.setDate(yesterday.getDate() - 1);
   return date.getDate() === yesterday.getDate() &&
          date.getMonth() === yesterday.getMonth() &&
-         date.getFullYear() === yesterday.getFullYear();
+         yesterday.getFullYear() === date.getFullYear();
 };

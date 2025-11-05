@@ -1,6 +1,7 @@
+
 import React from 'react';
-import { CameraIcon, LockIcon, RefreshIcon } from './Icons';
-import { useAppContext } from '../contexts/AppContext';
+import { CameraIcon, LockIcon, RefreshIcon } from './Icons.js';
+import { useAppContext } from '../contexts/AppContext.js';
 
 interface PermissionDeniedProps {
   onGoBack: () => void;

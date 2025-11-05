@@ -1,8 +1,9 @@
+
 import React, { useState } from 'react';
-import { Page, UnitSystem } from '../types';
-import { BackIcon } from '../components/Icons';
-import { useAppContext } from '../contexts/AppContext';
-import { getDisplayWeight, kgToLbs } from '../utils/units';
+import { Page, UnitSystem } from '../types.js';
+import { BackIcon } from '../components/Icons.js';
+import { useAppContext } from '../contexts/AppContext.js';
+import { getDisplayWeight, kgToLbs } from '../utils/units.js';
 
 const WeightInput: React.FC<{
     label: string;

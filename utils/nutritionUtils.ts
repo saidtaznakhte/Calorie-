@@ -1,4 +1,4 @@
-import { UserProfile, MacroGoals, Gender, ActivityLevel, PrimaryGoal } from '../types';
+import { UserProfile, MacroGoals, Gender, ActivityLevel, PrimaryGoal } from '../types.js';
 
 export const calculateGoals = (profile: Omit<UserProfile, 'id'>, weightLbs: number): MacroGoals => {
     const weightInKg = weightLbs / 2.20462;

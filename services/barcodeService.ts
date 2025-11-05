@@ -1,4 +1,5 @@
-import { FoodSearchResult } from '../types';
+
+import { FoodSearchResult } from '../types.js';
 
 // Mock database of barcodes to food items
 const barcodeData: { [barcode: string]: FoodSearchResult } = {

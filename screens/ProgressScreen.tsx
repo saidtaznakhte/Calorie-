@@ -1,15 +1,17 @@
 
+
 import React, { useState, useMemo, useEffect } from 'react';
-import { Meal, Activity, Theme } from '../types';
-import { toYYYYMMDD, formatDate } from '../utils/dateUtils';
+import { Meal, Activity, Theme } from '../types.js';
+import { toYYYYMMDD, formatDate } from '../utils/dateUtils.js';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Legend } from 'recharts';
-import { useAppContext } from '../contexts/AppContext';
-import { formatWeight, getDisplayWeight } from '../utils/units';
-import { getAIPersonalizedSuggestion } from '../services/geminiService';
-import { BarChartIcon } from '../components/Icons'; // Import BarChartIcon for placeholder
-import usePullToRefresh from '@/hooks/usePullToRefresh';
-import PullToRefreshIndicator from '@/components/PullToRefreshIndicator';
-import ProgressSkeleton from '@/components/ProgressSkeleton.tsx'; // Import ProgressSkeleton
+import { useAppContext } from '../contexts/AppContext.js';
+import { formatWeight, getDisplayWeight } from '../utils/units.js';
+import { getAIPersonalizedSuggestion } from '../services/geminiService.js';
+import { BarChartIcon } from '../components/Icons.js'; // Import BarChartIcon for placeholder
+// FIX: Changed import to a named import and relative path for consistency with other hook imports.
+import { usePullToRefresh } from '../hooks/usePullToRefresh.js';
+import PullToRefreshIndicator from '../components/PullToRefreshIndicator.js';
+import ProgressSkeleton from '../components/ProgressSkeleton.js'; // Updated to relative import
 
 const StatCard: React.FC<{ label: string; value?: string; children?: React.ReactNode }> = ({ label, value, children }) => (
     <div className="bg-card dark:bg-dark-card p-4 rounded-2xl flex-1 shadow-sm">

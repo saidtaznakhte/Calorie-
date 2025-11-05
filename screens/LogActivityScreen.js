@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 /* eslint-disable react/react-in-jsx-scope */ 
-import { Page, ActivityType, CustomActivity } from '../types.js';
+import { Page, ActivityType } from '../types.js';
 import { BackIcon, PlusIcon } from '../components/Icons.js';
 import { useAppContext } from '../contexts/AppContext.js';
 import { toYYYYMMDD } from '../utils/dateUtils.js';
@@ -36,7 +36,7 @@ const ActivityButton = ({
 );
 }
 
-const LogActivityScreen = () => {
+export const LogActivityScreen = () => {
     const { navigateTo, handleActivityLogged, currentWeight, customActivities, handleCustomActivityAdd, triggerHapticFeedback } = useAppContext();
     const [selectedActivity, setSelectedActivity] = useState(null);
     const [hours, setHours] = useState('');
@@ -211,5 +211,3 @@ const LogActivityScreen = () => {
         )
     );
 };
-
-export default LogActivityScreen;

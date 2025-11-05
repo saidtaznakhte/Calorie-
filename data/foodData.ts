@@ -1,5 +1,6 @@
 
-import { FoodSearchResult, FoodCategory } from '../types';
+
+import { FoodSearchResult, FoodCategory } from '../types.js';
 
 export const popularFoods: FoodSearchResult[] = [
   // Fruits

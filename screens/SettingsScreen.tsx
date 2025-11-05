@@ -1,7 +1,9 @@
+
+
 import React from 'react';
-import { Page, ThemePreference } from '../types';
-import { ChevronRightIcon, MoonIcon, SunIcon, DesktopIcon } from '../components/Icons';
-import { useAppContext } from '../contexts/AppContext';
+import { Page, ThemePreference } from '../types.js';
+import { ChevronRightIcon, MoonIcon, SunIcon, DesktopIcon } from '../components/Icons.js';
+import { useAppContext } from '../contexts/AppContext.js';
 
 const SettingsListItem: React.FC<{
   icon: string;

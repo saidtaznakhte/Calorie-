@@ -1,13 +1,15 @@
 
+
 import React, { useState, useMemo } from 'react';
-import { Page, Meal, MealType } from '../types';
+import { Page, Meal, MealType } from '../types.js';
 // FIX: Removed duplicate import alias for ChevronRightIcon.
-import { ChevronLeftIcon, ChevronRightIcon, PlusIcon, BellIcon, TrashIcon } from '../components/Icons';
-import { toYYYYMMDD, formatDate } from '../utils/dateUtils';
-import { useAppContext } from '../contexts/AppContext';
-import usePullToRefresh from '@/hooks/usePullToRefresh';
-import PullToRefreshIndicator from '@/components/PullToRefreshIndicator';
-import useSwipeToDelete from '@/hooks/useSwipeToDelete.ts'; // Import the new hook
+import { ChevronLeftIcon, ChevronRightIcon, PlusIcon, BellIcon, TrashIcon } from '../components/Icons.js';
+import { toYYYYMMDD, formatDate } from '../utils/dateUtils.js';
+import { useAppContext } from '../contexts/AppContext.js';
+import { usePullToRefresh } from '../hooks/usePullToRefresh.js';
+import PullToRefreshIndicator from '../components/PullToRefreshIndicator.js';
+// FIX: Changed import to a named import to match its export.
+import { useSwipeToDelete } from '../hooks/useSwipeToDelete.js'; // Updated to relative import
 
 const mealIcons: Record<MealType, string> = {
     [MealType.Breakfast]: '🥞',

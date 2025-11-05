@@ -1,11 +1,12 @@
+
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { Page, FoodSearchResult, MealType } from '../types';
-import { lookupBarcode } from '../services/barcodeService';
-import { BackIcon, EditIcon, PlusIcon } from '../components/Icons';
-import { useAppContext } from '../contexts/AppContext';
-import RequestCameraAccess from '../components/RequestCameraAccess';
-import PermissionDenied from '../components/PermissionDenied';
-import { toYYYYMMDD } from '../utils/dateUtils';
+import { Page, FoodSearchResult, MealType } from '../types.js';
+import { lookupBarcode } from '../services/barcodeService.js';
+import { BackIcon, EditIcon, PlusIcon } from '../components/Icons.js';
+import { useAppContext } from '../contexts/AppContext.js';
+import RequestCameraAccess from '../components/RequestCameraAccess.js';
+import PermissionDenied from '../components/PermissionDenied.js';
+import { toYYYYMMDD } from '../utils/dateUtils.js';
 
 // Check if BarcodeDetector is available in the browser
 declare global {
@@ -148,7 +149,7 @@ const BarcodeScannerScreen: React.FC = () => {
         } else {
             stream?.getTracks().forEach(track => track.stop());
         }
-    }, [scanState, permissionStatus]);
+    }, [scanState, permissionStatus, stream]); // Added stream to dependency array
     
     const handleBarcodeDetection = async (barcodeValue: string) => {
         setScanState('loading');
@@ -217,7 +218,7 @@ const BarcodeScannerScreen: React.FC = () => {
                     <div className="absolute inset-0 bg-black bg-opacity-20 z-10"></div>
                     <div className="absolute inset-0 flex flex-col items-center justify-between p-8 z-20">
                         <div className="w-full flex justify-between items-center">
-                            <button onClick={() => { triggerHapticFeedback(); navigateTo(Page.LogMeal); }} className="p-2 bg-black bg-opacity-40 rounded-full transition-transform active:scale-95"><BackIcon className="w-6 h-6 text-white" /></button>
+                            <button onClick={() => { triggerHapticFeedback(); navigateTo(Page.LogMeal); }} className="p-2 bg-black bg-opacity-40 rounded-full transition-transform active:scale-95"><BackIcon className="w-6 h-6 text-white"/></button>
                             <h1 className="text-lg font-semibold bg-black bg-opacity-40 px-3 py-1 rounded-full font-montserrat">Scan Barcode</h1>
                             <div className="w-10"></div>
                         </div>

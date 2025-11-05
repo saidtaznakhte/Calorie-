@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { RefreshIcon } from './Icons'; // Assuming RefreshIcon is available
+import { RefreshIcon } from './Icons.js'; // Assuming RefreshIcon is available
 
 const PullToRefreshIndicator: React.FC = () => {
   return (

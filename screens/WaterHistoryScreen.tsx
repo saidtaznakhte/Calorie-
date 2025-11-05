@@ -1,9 +1,11 @@
+
 import React, { useMemo } from 'react';
-import { Page } from '../types';
-import { BackIcon } from '../components/Icons';
+import { Page } from '../types.js';
+import { BackIcon } from '../components/Icons.js';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { formatDate, toYYYYMMDD } from '../utils/dateUtils';
-import { useAppContext } from '../contexts/AppContext';
+import { formatDate, toYYYYMMDD } from '../utils/dateUtils.js';
+import { useAppContext } from '../contexts/AppContext.js';
+import { formatWeight } from '../utils/units.js';
 
 const WaterHistoryScreen: React.FC = () => {
     const { navigateTo, waterIntakeHistory: history, waterGoal, theme, triggerHapticFeedback } = useAppContext();

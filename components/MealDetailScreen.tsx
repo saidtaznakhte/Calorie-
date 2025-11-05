@@ -1,10 +1,10 @@
 
 
 import React from 'react';
-import { useAppContext } from '../contexts/AppContext';
-import { BackIcon, TrashIcon } from '../components/Icons';
-import { Page } from '../types';
-import { formatDate } from '../utils/dateUtils';
+import { useAppContext } from '../contexts/AppContext.js';
+import { BackIcon, TrashIcon } from './Icons.js';
+import { Page } from '../types.js';
+import { formatDate } from '../utils/dateUtils.js';
 
 const NutrientPill: React.FC<{ label: string; value: string | number; unit: string; color: string }> = ({ label, value, unit, color }) => (
     <div className="flex flex-col items-center justify-center bg-light-gray dark:bg-dark-border p-3 rounded-xl text-center flex-1">

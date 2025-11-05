@@ -1,12 +1,13 @@
+
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Page, MealType, FoodSearchResult, Meal, FoodCategory, PreppedMeal } from '../types';
-import { BackIcon, CameraIcon, SearchIcon, BarcodeIcon, PlusIcon, StarIcon, ChefHatIcon, TrashIcon, ChevronRightIcon, EditIcon, XIcon } from '../components/Icons';
-import { searchFood } from '../services/geminiService';
-import { toYYYYMMDD } from '../utils/dateUtils';
-import { useAppContext } from '../contexts/AppContext';
-import { popularFoods } from '../data/foodData';
-import LogServingModal from '../components/LogServingModal'; // Import the new modal
-import Skeleton from '../components/Skeleton'; // Import Skeleton component
+import { Page, MealType, FoodSearchResult, Meal, FoodCategory, PreppedMeal } from '../types.js';
+import { BackIcon, CameraIcon, SearchIcon, BarcodeIcon, PlusIcon, StarIcon, ChefHatIcon, TrashIcon, ChevronRightIcon, EditIcon, XIcon } from '../components/Icons.js';
+import { searchFood } from '../services/geminiService.js';
+import { toYYYYMMDD } from '../utils/dateUtils.js';
+import { useAppContext } from '../contexts/AppContext.js';
+import { popularFoods } from '../data/foodData.js';
+import LogServingModal from '../components/LogServingModal.js'; // Import the new modal
+import Skeleton from '../components/Skeleton.js'; // Import Skeleton component
 
 const getDefaultMealType = (): MealType => {
     const currentHour = new Date().getHours();

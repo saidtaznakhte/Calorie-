@@ -1,6 +1,7 @@
+
 import React from 'react';
-import { CameraIcon } from './Icons';
-import { useAppContext } from '../contexts/AppContext';
+import { CameraIcon } from './Icons.js';
+import { useAppContext } from '../contexts/AppContext.js';
 
 interface RequestCameraAccessProps {
   onGrant: () => void;

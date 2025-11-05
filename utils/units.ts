@@ -1,4 +1,4 @@
-import { UnitSystem } from '../types';
+import { UnitSystem } from '../types.js';
 
 export const LBS_IN_KG = 2.20462262185;
 export const INCHES_IN_CM = 0.393701;
