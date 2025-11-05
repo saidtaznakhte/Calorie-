@@ -1,7 +1,6 @@
-
-
 import React from 'react';
 import { toYYYYMMDD, formatDate, isToday as checkIsToday } from '../utils/dateUtils';
+import { useAppContext } from '../contexts/AppContext';
 
 interface DateSelectorProps {
   selectedDate: Date;
@@ -15,6 +14,7 @@ interface DateSelectorProps {
 }
 
 const DateSelector: React.FC<DateSelectorProps> = ({ selectedDate, onDateChange, onDayClick }) => {
+  const { triggerHapticFeedback } = useAppContext();
   const startOfWeek = new Date(selectedDate);
   startOfWeek.setDate(selectedDate.getDate() - startOfWeek.getDay()); // Start from Sunday
 
@@ -35,6 +35,7 @@ const DateSelector: React.FC<DateSelectorProps> = ({ selectedDate, onDateChange,
         const isToday = checkIsToday(date); // Use the utility function to check if it's today
 
         const handleClick = () => {
+          triggerHapticFeedback();
           if (onDayClick) {
             onDayClick(); // Call the onDayClick handler for any day
           } else {
@@ -46,7 +47,7 @@ const DateSelector: React.FC<DateSelectorProps> = ({ selectedDate, onDateChange,
           <button
             key={index}
             onClick={handleClick}
-            className={`flex flex-col items-center justify-center w-12 h-20 rounded-xl transition-all duration-200 relative group focus:outline-none focus:ring-2 focus:ring-primary/50
+            className={`flex flex-col items-center justify-center w-12 h-20 rounded-xl transition-all duration-200 relative group focus:outline-none focus:ring-2 focus:ring-primary/50 transition-transform active:scale-95
               ${
                 isSelected 
                   ? 'bg-primary text-white shadow-lg' 

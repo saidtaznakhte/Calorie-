@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { Page, FoodSearchResult, MealType } from '../types';
 import { lookupBarcode } from '../services/barcodeService';
@@ -29,6 +28,7 @@ const FoundItemCard: React.FC<{
     onLog: (mealType: MealType) => void;
     onScanAgain: () => void;
 }> = ({ item, onLog, onScanAgain }) => {
+    const { triggerHapticFeedback } = useAppContext();
     const [mealType, setMealType] = useState<MealType>(getDefaultMealType());
 
     return (
@@ -58,11 +58,11 @@ const FoundItemCard: React.FC<{
             </div>
 
             <div className="flex flex-col space-y-3">
-                 <button onClick={() => onLog(mealType)} className="w-full bg-primary text-white font-bold py-4 rounded-xl text-lg flex items-center justify-center">
+                 <button onClick={() => { triggerHapticFeedback(); onLog(mealType); }} className="w-full bg-primary text-white font-bold py-4 rounded-xl text-lg flex items-center justify-center transition-transform active:scale-95">
                     <PlusIcon className="w-6 h-6 mr-2"/>
                     Log Meal
                 </button>
-                <button onClick={onScanAgain} className="w-full bg-light-gray dark:bg-dark-border text-text-main dark:text-dark-text-main font-bold py-3 rounded-xl">
+                <button onClick={() => { triggerHapticFeedback(); onScanAgain(); }} className="w-full bg-light-gray dark:bg-dark-border text-text-main dark:text-dark-text-main font-bold py-3 rounded-xl transition-transform active:scale-95">
                     Scan Again
                 </button>
             </div>
@@ -72,16 +72,17 @@ const FoundItemCard: React.FC<{
 
 // Sub-component for "not found" state
 const NotFoundCard: React.FC<{ onRetry: () => void; onManualEntry: () => void }> = ({ onRetry, onManualEntry }) => {
+    const { triggerHapticFeedback } = useAppContext();
     return (
         <div className="absolute bottom-0 left-0 right-0 bg-card dark:bg-dark-card rounded-t-3xl p-6 z-30 animate-slide-in-up shadow-[0_-10px_30px_rgba(0,0,0,0.1)] text-center">
             <h2 className="text-2xl font-bold text-text-main dark:text-dark-text-main mb-2 font-montserrat">Product Not Found</h2>
             <p className="text-text-light dark:text-dark-text-light mb-6">Sorry, we couldn't find this barcode in our database.</p>
             <div className="flex flex-col space-y-3">
-                 <button onClick={onManualEntry} className="w-full bg-secondary text-white font-bold py-3 rounded-xl flex items-center justify-center">
+                 <button onClick={() => { triggerHapticFeedback(); onManualEntry(); }} className="w-full bg-secondary text-white font-bold py-3 rounded-xl flex items-center justify-center transition-transform active:scale-95">
                     <EditIcon className="w-5 h-5 mr-2" />
                     Enter Manually
                 </button>
-                <button onClick={onRetry} className="w-full bg-light-gray dark:bg-dark-border text-text-main dark:text-dark-text-main font-bold py-3 rounded-xl">
+                <button onClick={() => { triggerHapticFeedback(); onRetry(); }} className="w-full bg-light-gray dark:bg-dark-border text-text-main dark:text-dark-text-main font-bold py-3 rounded-xl transition-transform active:scale-95">
                     Try Again
                 </button>
             </div>
@@ -91,7 +92,7 @@ const NotFoundCard: React.FC<{ onRetry: () => void; onManualEntry: () => void }>
 
 
 const BarcodeScannerScreen: React.FC = () => {
-    const { navigateTo, handleMealLogged } = useAppContext();
+    const { navigateTo, handleMealLogged, triggerHapticFeedback } = useAppContext();
     const videoRef = useRef<HTMLVideoElement>(null);
     const [stream, setStream] = useState<MediaStream | null>(null);
     const [scanState, setScanState] = useState<'scanning' | 'loading' | 'success' | 'error'>('scanning');
@@ -151,6 +152,7 @@ const BarcodeScannerScreen: React.FC = () => {
     
     const handleBarcodeDetection = async (barcodeValue: string) => {
         setScanState('loading');
+        triggerHapticFeedback();
         try {
             const foodData = await lookupBarcode(barcodeValue);
             setFoundFood(foodData);
@@ -168,7 +170,7 @@ const BarcodeScannerScreen: React.FC = () => {
                 handleBarcodeDetection(barcodes[0].rawValue);
             }
         } catch (err) { /* Silently ignore detection errors on single frames */ }
-    }, [scanState]);
+    }, [scanState, triggerHapticFeedback]);
 
     useEffect(() => {
         let animationFrameId: number;
@@ -206,8 +208,8 @@ const BarcodeScannerScreen: React.FC = () => {
     return (
         <div className="w-full h-full bg-black flex flex-col items-center justify-center relative text-white">
             {permissionStatus === 'checking' && <div className="w-8 h-8 border-2 border-white rounded-full border-t-transparent animate-spin"></div>}
-            {permissionStatus === 'prompt' && <RequestCameraAccess onGrant={startCamera} onDeny={() => navigateTo(Page.LogMeal)} featureName="Barcode Scanning" featureDescription="Scan product barcodes to quickly log your food. We need camera access to use the scanner." />}
-            {permissionStatus === 'denied' && <PermissionDenied onGoBack={() => navigateTo(Page.LogMeal)} featureName="Barcode Scanning" />}
+            {permissionStatus === 'prompt' && <RequestCameraAccess onGrant={() => { triggerHapticFeedback(); startCamera(); }} onDeny={() => { triggerHapticFeedback(); navigateTo(Page.LogMeal); }} featureName="Barcode Scanning" featureDescription="Scan product barcodes to quickly log your food. We need camera access to use the scanner." />}
+            {permissionStatus === 'denied' && <PermissionDenied onGoBack={() => { triggerHapticFeedback(); navigateTo(Page.LogMeal); }} featureName="Barcode Scanning" />}
 
             {permissionStatus === 'granted' && (
                 <>
@@ -215,7 +217,7 @@ const BarcodeScannerScreen: React.FC = () => {
                     <div className="absolute inset-0 bg-black bg-opacity-20 z-10"></div>
                     <div className="absolute inset-0 flex flex-col items-center justify-between p-8 z-20">
                         <div className="w-full flex justify-between items-center">
-                            <button onClick={() => navigateTo(Page.LogMeal)} className="p-2 bg-black bg-opacity-40 rounded-full"><BackIcon className="w-6 h-6 text-white" /></button>
+                            <button onClick={() => { triggerHapticFeedback(); navigateTo(Page.LogMeal); }} className="p-2 bg-black bg-opacity-40 rounded-full transition-transform active:scale-95"><BackIcon className="w-6 h-6 text-white" /></button>
                             <h1 className="text-lg font-semibold bg-black bg-opacity-40 px-3 py-1 rounded-full font-montserrat">Scan Barcode</h1>
                             <div className="w-10"></div>
                         </div>
@@ -231,7 +233,7 @@ const BarcodeScannerScreen: React.FC = () => {
                     </div>
                     
                     {scanState === 'success' && foundFood && <FoundItemCard item={foundFood} onLog={handleLog} onScanAgain={resetScanner} />}
-                    {scanState === 'error' && <NotFoundCard onRetry={resetScanner} onManualEntry={() => navigateTo(Page.ManualLog)} />}
+                    {scanState === 'error' && <NotFoundCard onRetry={resetScanner} onManualEntry={() => { triggerHapticFeedback(); navigateTo(Page.ManualLog); }} />}
                 </>
             )}
         </div>

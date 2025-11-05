@@ -1,5 +1,4 @@
 
-
 import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode, useMemo, useRef } from 'react';
 import { Page, Meal, Theme, MacroGoals, WeightEntry, UserProfile, FoodSearchResult, Activity, UserData, Gender, ActivityLevel, PrimaryGoal, UnitSystem, PreppedMeal, MealType, ThemePreference, CustomActivity, ReminderSettings, ReminderType } from '../types';
 import { toYYYYMMDD } from '../utils/dateUtils';

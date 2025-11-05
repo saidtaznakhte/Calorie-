@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Meal, Activity, Theme } from '../types';
 import { toYYYYMMDD, formatDate } from '../utils/dateUtils';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Legend } from 'recharts';
@@ -7,6 +7,9 @@ import { useAppContext } from '../contexts/AppContext';
 import { formatWeight, getDisplayWeight } from '../utils/units';
 import { getAIPersonalizedSuggestion } from '../services/geminiService';
 import { BarChartIcon } from '../components/Icons'; // Import BarChartIcon for placeholder
+import usePullToRefresh from '@/hooks/usePullToRefresh';
+import PullToRefreshIndicator from '@/components/PullToRefreshIndicator';
+import ProgressSkeleton from '@/components/ProgressSkeleton.tsx'; // Import ProgressSkeleton
 
 const StatCard: React.FC<{ label: string; value?: string; children?: React.ReactNode }> = ({ label, value, children }) => (
     <div className="bg-card dark:bg-dark-card p-4 rounded-2xl flex-1 shadow-sm">
@@ -41,6 +44,7 @@ const AISuggestionCard: React.FC<{
     initialSuggestions?: string[]; // New prop for initial display
     hasGenerated: boolean; // New prop to track if user has generated
 }> = ({ suggestions, isLoading, error, onGenerate, initialSuggestions, hasGenerated }) => {
+    const { triggerHapticFeedback } = useAppContext();
     const displaySuggestions = hasGenerated ? suggestions : (suggestions || initialSuggestions);
 
     return (
@@ -56,7 +60,7 @@ const AISuggestionCard: React.FC<{
             ) : error ? (
                 <div className="text-center py-4">
                     <p className="text-protein mb-3">{error}</p>
-                    <button onClick={onGenerate} className="bg-primary text-white font-semibold py-2 px-4 rounded-lg text-sm">
+                    <button onClick={() => { triggerHapticFeedback(); onGenerate(); }} className="bg-primary text-white font-semibold py-2 px-4 rounded-lg text-sm transition-transform active:scale-95">
                         Try Again
                     </button>
                 </div>
@@ -77,7 +81,7 @@ const AISuggestionCard: React.FC<{
                         </div>
                     )}
                     <div className="text-center mt-6">
-                        <button onClick={onGenerate} className="bg-primary text-white font-semibold py-2 px-4 rounded-lg">
+                        <button onClick={() => { triggerHapticFeedback(); onGenerate(); }} className="bg-primary text-white font-semibold py-2 px-4 rounded-lg transition-transform active:scale-95">
                             {hasGenerated ? 'Re-generate Insights' : 'Generate Insights'}
                         </button>
                     </div>
@@ -103,6 +107,8 @@ const ProgressScreen: React.FC = () => { // Renamed from ReportsScreen
         currentWeight,
         profile,
         macroGoals,
+        showToast,
+        triggerHapticFeedback,
     } = useAppContext();
     
     const [timeframe, setTimeframe] = useState<'weekly' | 'monthly'>('weekly');
@@ -110,7 +116,28 @@ const ProgressScreen: React.FC = () => { // Renamed from ReportsScreen
     const [aiSuggestions, setAiSuggestions] = useState<string[] | null>(null);
     const [isGenerating, setIsGenerating] = useState(false);
     const [suggestionError, setSuggestionError] = useState<string | null>(null);
-    const [hasGeneratedInsights, setHasGeneratedInsights] = useState(false); // New state to track if user has generated insights
+    const [hasGeneratedInsights, setHasGeneratedInsights] = useState(false); // New state to track if user has initiated generation
+    const [isLoadingPage, setIsLoadingPage] = useState(true); // For skeleton loading of entire page data
+
+    // Pull-to-refresh hook
+    const handleRefresh = async () => {
+        setIsLoadingPage(true);
+        // Simulate a network request or data refetch
+        await new Promise(resolve => setTimeout(resolve, 1500)); 
+        setIsLoadingPage(false);
+        setHasGeneratedInsights(false); // Reset AI suggestions on refresh
+        setAiSuggestions(null);
+        showToast({ text: "Progress refreshed!", type: 'info' });
+    };
+    const { isRefreshing, handleTouchStart, handleTouchMove, handleTouchEnd, scrollRef } = usePullToRefresh(handleRefresh);
+
+    useEffect(() => {
+        // Simulate initial data load for the page
+        const timer = setTimeout(() => {
+            setIsLoadingPage(false);
+        }, 1000);
+        return () => clearTimeout(timer);
+    }, []);
     
     const isDarkMode = theme === 'dark';
     const axisColor = isDarkMode ? '#9CA3AF' : '#6B7280';
@@ -174,6 +201,7 @@ const ProgressScreen: React.FC = () => { // Renamed from ReportsScreen
     };
 
     const nutritionData = useMemo(() => {
+        if (isLoadingPage) return { chartData: [], macroPieData: [] };
         const endDate = new Date();
         const numDays = timeframe === 'weekly' ? 7 : 30;
         
@@ -214,9 +242,10 @@ const ProgressScreen: React.FC = () => { // Renamed from ReportsScreen
         ].filter(d => d.value > 0);
 
         return { chartData, macroPieData };
-    }, [loggedMeals, timeframe]);
+    }, [loggedMeals, timeframe, isLoadingPage]);
 
     const activityData = useMemo(() => {
+        if (isLoadingPage) return { chartData: [], totalCaloriesBurned: 0 };
         const endDate = new Date();
         const numDays = timeframe === 'weekly' ? 7 : 30;
         
@@ -239,9 +268,10 @@ const ProgressScreen: React.FC = () => { // Renamed from ReportsScreen
         const totalCaloriesBurned = chartData.reduce((sum, day) => sum + day.caloriesBurned, 0);
 
         return { chartData, totalCaloriesBurned };
-    }, [loggedActivities, timeframe]);
+    }, [loggedActivities, timeframe, isLoadingPage]);
 
     const weightData = useMemo(() => {
+        if (isLoadingPage) return { bmi: '0.0', bmiCategory: 'N/A', chartData: [], yMin: 0, yMax: 100 };
         const bmi = (currentWeight / (profile.height * profile.height)) * 703;
         const bmiCategory = (() => {
             if (bmi < 18.5) return 'Underweight';
@@ -256,13 +286,29 @@ const ProgressScreen: React.FC = () => { // Renamed from ReportsScreen
             goal: getDisplayWeight(goalWeight, profile.unitSystem)
         }));
 
+        // Calculate yMin and yMax for the chart, adding padding
+        const allWeights = chartData.flatMap(d => [d.weight, d.goal]);
+        const calculatedYMin = allWeights.length > 0 ? Math.min(...allWeights) - 5 : 0;
+        const calculatedYMax = allWeights.length > 0 ? Math.max(...allWeights) + 5 : 100;
+
         return {
             bmi: bmi.toFixed(1),
             bmiCategory,
-            chartData
+            chartData,
+            yMin: calculatedYMin,
+            yMax: calculatedYMax,
         };
-    }, [weightHistory, currentWeight, goalWeight, profile]);
+    }, [weightHistory, currentWeight, goalWeight, profile, isLoadingPage]);
     
+    const handleSetView = (newView: 'Nutrition' | 'Activity' | 'Weight') => {
+        triggerHapticFeedback();
+        setView(newView);
+    };
+
+    const handleSetTimeframe = (newTimeframe: 'weekly' | 'monthly') => {
+        triggerHapticFeedback();
+        setTimeframe(newTimeframe);
+    };
 
     const renderNutritionView = () => (
         <>
@@ -349,7 +395,8 @@ const ProgressScreen: React.FC = () => { // Renamed from ReportsScreen
                     <ResponsiveContainer>
                         <LineChart data={weightData.chartData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
                             <XAxis dataKey="date" fontSize={12} tickLine={false} axisLine={false} stroke={axisColor} />
-                            <YAxis domain={['dataMin - 5', 'dataMax + 5']} fontSize={12} tickLine={false} axisLine={false} stroke={axisColor} unit={profile.unitSystem === 'metric' ? ' kg' : ' lbs'} />
+                            {/* FIX: Replaced string literal arithmetic with pre-calculated numerical values for YAxis domain. */}
+                            <YAxis domain={[weightData.yMin, weightData.yMax]} fontSize={12} tickLine={false} axisLine={false} stroke={axisColor} unit={profile.unitSystem === 'metric' ? ' kg' : ' lbs'} />
                             <Tooltip contentStyle={tooltipStyle} />
                             <Line type="monotone" dataKey="weight" name="Weight" stroke="#00C795" strokeWidth={2} />
                             <Line type="monotone" dataKey="goal" name="Goal" stroke="#F97316" strokeDasharray="5 5" />
@@ -366,38 +413,51 @@ const ProgressScreen: React.FC = () => { // Renamed from ReportsScreen
     );
 
     return (
-        <div className="p-4 bg-background dark:bg-dark-background min-h-full">
+        <div 
+            className="p-4 bg-background dark:bg-dark-background min-h-full flex flex-col"
+            ref={scrollRef as React.RefObject<HTMLDivElement>}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+        >
+            {isRefreshing && <PullToRefreshIndicator />}
             <h1 className="text-3xl font-bold text-text-main dark:text-dark-text-main mb-6 text-center font-montserrat">Progress</h1>
             
-            <div className="flex p-1 bg-light-gray dark:bg-dark-border rounded-full mb-6">
-                <button onClick={() => setView('Nutrition')} className={`w-full py-2 rounded-full text-sm font-semibold transition-colors ${view === 'Nutrition' ? 'bg-card dark:bg-dark-card text-primary shadow' : 'text-text-light dark:text-dark-text-light'}`}>Nutrition</button>
-                <button onClick={() => setView('Activity')} className={`w-full py-2 rounded-full text-sm font-semibold transition-colors ${view === 'Activity' ? 'bg-card dark:bg-dark-card text-primary shadow' : 'text-text-light dark:text-dark-text-light'}`}>Activity</button>
-                <button onClick={() => setView('Weight')} className={`w-full py-2 rounded-full text-sm font-semibold transition-colors ${view === 'Weight' ? 'bg-card dark:bg-dark-card text-primary shadow' : 'text-text-light dark:text-dark-text-light'}`}>Weight</button>
-            </div>
-            
-            {(view === 'Nutrition' || view === 'Activity') && (
-                <div className="flex justify-center p-1 bg-light-gray dark:bg-dark-border rounded-full mb-6">
-                    <button onClick={() => setTimeframe('weekly')} className={`w-full py-2 rounded-full text-sm font-semibold transition-colors ${timeframe === 'weekly' ? 'bg-card dark:bg-dark-card text-primary shadow' : 'text-text-light dark:text-dark-text-light'}`}>Weekly</button>
-                    <button onClick={() => setTimeframe('monthly')} className={`w-full py-2 rounded-full text-sm font-semibold transition-colors ${timeframe === 'monthly' ? 'bg-card dark:bg-dark-card text-primary shadow' : 'text-text-light dark:text-dark-text-light'}`}>Monthly</button>
-                </div>
+            {isLoadingPage ? (
+                <ProgressSkeleton />
+            ) : (
+                <>
+                    <div className="flex p-1 bg-light-gray dark:bg-dark-border rounded-full mb-6">
+                        <button onClick={() => handleSetView('Nutrition')} className={`w-full py-2 rounded-full text-sm font-semibold transition-colors transition-transform active:scale-95 ${view === 'Nutrition' ? 'bg-card dark:bg-dark-card text-primary shadow' : 'text-text-light dark:text-dark-text-light'}`}>Nutrition</button>
+                        <button onClick={() => handleSetView('Activity')} className={`w-full py-2 rounded-full text-sm font-semibold transition-colors transition-transform active:scale-95 ${view === 'Activity' ? 'bg-card dark:bg-dark-card text-primary shadow' : 'text-text-light dark:text-dark-text-light'}`}>Activity</button>
+                        <button onClick={() => handleSetView('Weight')} className={`w-full py-2 rounded-full text-sm font-semibold transition-colors transition-transform active:scale-95 ${view === 'Weight' ? 'bg-card dark:bg-dark-card text-primary shadow' : 'text-text-light dark:text-dark-text-light'}`}>Weight</button>
+                    </div>
+                    
+                    {(view === 'Nutrition' || view === 'Activity') && (
+                        <div className="flex justify-center p-1 bg-light-gray dark:bg-dark-border rounded-full mb-6">
+                            <button onClick={() => handleSetTimeframe('weekly')} className={`w-full py-2 rounded-full text-sm font-semibold transition-colors transition-transform active:scale-95 ${timeframe === 'weekly' ? 'bg-card dark:bg-dark-card text-primary shadow' : 'text-text-light dark:text-dark-text-light'}`}>Weekly</button>
+                            <button onClick={() => handleSetTimeframe('monthly')} className={`w-full py-2 rounded-full text-sm font-semibold transition-colors transition-transform active:scale-95 ${timeframe === 'monthly' ? 'bg-card dark:bg-dark-card text-primary shadow' : 'text-text-light dark:text-dark-text-light'}`}>Monthly</button>
+                        </div>
+                    )}
+                    
+                    <div className="space-y-6 animate-fade-in flex-1 overflow-y-auto">
+                        <AISuggestionCard 
+                            suggestions={aiSuggestions}
+                            isLoading={isGenerating}
+                            error={suggestionError}
+                            onGenerate={handleGenerateSuggestion}
+                            initialSuggestions={initialAiSuggestions}
+                            hasGenerated={hasGeneratedInsights}
+                        />
+                        
+                        {view === 'Nutrition' && renderNutritionView()}
+                        {view === 'Activity' && renderActivityView()}
+                        {view === 'Weight' && renderWeightView()}
+                    </div>
+                </>
             )}
-            
-            <div className="space-y-6 animate-fade-in">
-                <AISuggestionCard 
-                    suggestions={aiSuggestions}
-                    isLoading={isGenerating}
-                    error={suggestionError}
-                    onGenerate={handleGenerateSuggestion}
-                    initialSuggestions={initialAiSuggestions}
-                    hasGenerated={hasGeneratedInsights}
-                />
-                
-                {view === 'Nutrition' && renderNutritionView()}
-                {view === 'Activity' && renderActivityView()}
-                {view === 'Weight' && renderWeightView()}
-            </div>
         </div>
     );
 };
 
-export default ProgressScreen; // Renamed from ReportsScreen
+export default ProgressScreen;

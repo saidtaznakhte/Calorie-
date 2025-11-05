@@ -1,10 +1,9 @@
-
 import React from 'react';
 import { useAppContext } from '../contexts/AppContext';
 import { PlusIcon } from '../components/Icons';
 
 const WelcomeScreen: React.FC = () => {
-    const { users, login, startRegistration } = useAppContext();
+    const { users, login, startRegistration, triggerHapticFeedback } = useAppContext();
 
     return (
         <div className="max-w-md mx-auto h-screen bg-background dark:bg-dark-background font-sans flex flex-col justify-center items-center p-8 text-center">
@@ -15,8 +14,8 @@ const WelcomeScreen: React.FC = () => {
                 {users.map(profile => (
                     <button 
                         key={profile.id}
-                        onClick={() => login(profile.id)}
-                        className="flex flex-col items-center p-4 bg-card dark:bg-dark-card rounded-2xl shadow-md transition-transform hover:scale-105"
+                        onClick={() => { triggerHapticFeedback(); login(profile.id); }}
+                        className="flex flex-col items-center p-4 bg-card dark:bg-dark-card rounded-2xl shadow-md transition-transform hover:scale-105 active:scale-95"
                     >
                         <div className="w-24 h-24 bg-secondary/10 dark:bg-secondary/20 rounded-full flex items-center justify-center mb-4 text-5xl">
                             {profile.avatar}
@@ -25,8 +24,8 @@ const WelcomeScreen: React.FC = () => {
                     </button>
                 ))}
                 <button 
-                    onClick={startRegistration}
-                    className="flex flex-col items-center justify-center p-4 bg-card dark:bg-dark-card rounded-2xl shadow-md transition-transform hover:scale-105 border-2 border-dashed border-gray-300 dark:border-dark-border"
+                    onClick={() => { triggerHapticFeedback(); startRegistration(); }}
+                    className="flex flex-col items-center justify-center p-4 bg-card dark:bg-dark-card rounded-2xl shadow-md transition-transform hover:scale-105 active:scale-95 border-2 border-dashed border-gray-300 dark:border-dark-border"
                 >
                     <div className="w-24 h-24 bg-light-gray dark:bg-dark-border rounded-full flex items-center justify-center mb-4 text-primary">
                         <PlusIcon className="w-12 h-12" />

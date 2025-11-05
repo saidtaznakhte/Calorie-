@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Page, UserProfile, Gender, ActivityLevel, PrimaryGoal, UnitSystem } from '../types';
 import { BackIcon } from '../components/Icons';
@@ -7,29 +6,33 @@ import { cmToInches, getDisplayHeightCm, getDisplayHeightFt, getDisplayHeightIn 
 
 const avatars = ['🧑‍🦰', '👩‍🦳', '👨‍🚀', '🦸‍♀️', '🧘‍♂️', '🎨', '🎸', '⚽️'];
 
-const UnitSelector: React.FC<{ selected: UnitSystem; onSelect: (system: UnitSystem) => void }> = ({ selected, onSelect }) => (
-    <div className="flex p-1 bg-gray-200 dark:bg-dark-border rounded-full">
-        <button
-            onClick={() => onSelect(UnitSystem.Imperial)}
-            className={`w-1/2 py-2 rounded-full font-semibold transition-colors ${selected === UnitSystem.Imperial ? 'bg-card dark:bg-dark-card text-primary shadow' : 'text-text-light dark:text-dark-text-light'}`}
-        >
-            Imperial (lbs, ft)
-        </button>
-        <button
-            onClick={() => onSelect(UnitSystem.Metric)}
-            className={`w-1/2 py-2 rounded-full font-semibold transition-colors ${selected === UnitSystem.Metric ? 'bg-card dark:bg-dark-card text-primary shadow' : 'text-text-light dark:text-dark-text-light'}`}
-        >
-            Metric (kg, cm)
-        </button>
-    </div>
-);
+const UnitSelector: React.FC<{ selected: UnitSystem; onSelect: (system: UnitSystem) => void }> = ({ selected, onSelect }) => {
+    const { triggerHapticFeedback } = useAppContext();
+    return (
+        <div className="flex p-1 bg-gray-200 dark:bg-dark-border rounded-full">
+            <button
+                onClick={() => { triggerHapticFeedback(); onSelect(UnitSystem.Imperial); }}
+                className={`w-1/2 py-2 rounded-full font-semibold transition-colors transition-transform active:scale-95 ${selected === UnitSystem.Imperial ? 'bg-card dark:bg-dark-card text-primary shadow' : 'text-text-light dark:text-dark-text-light'}`}
+            >
+                Imperial (lbs, ft)
+            </button>
+            <button
+                onClick={() => { triggerHapticFeedback(); onSelect(UnitSystem.Metric); }}
+                className={`w-1/2 py-2 rounded-full font-semibold transition-colors transition-transform active:scale-95 ${selected === UnitSystem.Metric ? 'bg-card dark:bg-dark-card text-primary shadow' : 'text-text-light dark:text-dark-text-light'}`}
+            >
+                Metric (kg, cm)
+            </button>
+        </div>
+    );
+};
 
 
 const ProfileScreen: React.FC = () => {
-    const { navigateTo, profile: currentProfile, handleProfileUpdate: onSave } = useAppContext();
+    const { navigateTo, profile: currentProfile, handleProfileUpdate: onSave, triggerHapticFeedback } = useAppContext();
     const [profile, setProfile] = useState<UserProfile>(currentProfile);
 
     const handleSave = () => {
+        triggerHapticFeedback();
         onSave(profile);
     };
 
@@ -65,7 +68,7 @@ const ProfileScreen: React.FC = () => {
     return (
         <div className="p-4 flex flex-col h-full bg-background dark:bg-dark-background">
             <header className="flex items-center mb-6">
-                <button onClick={() => navigateTo(Page.Settings)} className="p-2 -ml-2">
+                <button onClick={() => { triggerHapticFeedback(); navigateTo(Page.Settings); }} className="p-2 -ml-2 transition-transform active:scale-95">
                     <BackIcon className="w-6 h-6 text-text-main dark:text-dark-text-main" />
                 </button>
                 <h1 className="text-xl font-bold text-text-main dark:text-dark-text-main mx-auto font-montserrat">Edit Profile</h1>
@@ -83,8 +86,8 @@ const ProfileScreen: React.FC = () => {
                             {avatars.map(avatar => (
                                 <button
                                     key={avatar}
-                                    onClick={() => setProfile(p => ({ ...p, avatar }))}
-                                    className={`w-12 h-12 rounded-full text-2xl flex items-center justify-center transition-transform hover:scale-110 ${profile.avatar === avatar ? 'bg-primary-light ring-2 ring-primary' : 'bg-light-gray dark:bg-dark-border'}`}
+                                    onClick={() => { triggerHapticFeedback(); setProfile(p => ({ ...p, avatar })); }}
+                                    className={`w-12 h-12 rounded-full text-2xl flex items-center justify-center transition-transform hover:scale-110 active:scale-95 ${profile.avatar === avatar ? 'bg-primary-light ring-2 ring-primary' : 'bg-light-gray dark:bg-dark-border'}`}
                                 >
                                     {avatar}
                                 </button>
@@ -147,7 +150,7 @@ const ProfileScreen: React.FC = () => {
             </div>
 
             <div className="mt-6">
-                <button onClick={handleSave} className="w-full bg-primary text-white font-bold py-4 rounded-xl text-lg shadow-md hover:bg-primary/90 transition-colors">
+                <button onClick={handleSave} className="w-full bg-primary text-white font-bold py-4 rounded-xl text-lg shadow-md hover:bg-primary/90 transition-colors transition-transform active:scale-95">
                     Save Changes
                 </button>
             </div>

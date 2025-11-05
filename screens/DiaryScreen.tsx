@@ -1,11 +1,13 @@
 
-
 import React, { useState, useMemo } from 'react';
 import { Page, Meal, MealType } from '../types';
 // FIX: Removed duplicate import alias for ChevronRightIcon.
 import { ChevronLeftIcon, ChevronRightIcon, PlusIcon, BellIcon, TrashIcon } from '../components/Icons';
 import { toYYYYMMDD, formatDate } from '../utils/dateUtils';
 import { useAppContext } from '../contexts/AppContext';
+import usePullToRefresh from '@/hooks/usePullToRefresh';
+import PullToRefreshIndicator from '@/components/PullToRefreshIndicator';
+import useSwipeToDelete from '@/hooks/useSwipeToDelete.ts'; // Import the new hook
 
 const mealIcons: Record<MealType, string> = {
     [MealType.Breakfast]: '🥞',
@@ -15,10 +17,22 @@ const mealIcons: Record<MealType, string> = {
 };
 
 const DiaryScreen: React.FC = () => {
-    const { navigateTo, loggedMeals, viewMealDetail, handleMealRemoved, openRemindersModal } = useAppContext();
+    const { navigateTo, loggedMeals, viewMealDetail, handleMealRemoved, openRemindersModal, triggerHapticFeedback, showToast } = useAppContext();
     const [selectedDate, setSelectedDate] = useState(new Date());
+    const [isLoadingData, setIsLoadingData] = useState(false); // For simulating refresh
+
+    // Pull-to-refresh hook
+    const handleRefresh = async () => {
+        setIsLoadingData(true);
+        await new Promise(resolve => setTimeout(resolve, 1500)); 
+        setSelectedDate(new Date()); // Reset date to today or refetch current day's data
+        setIsLoadingData(false);
+        showToast({ text: "Diary refreshed!", type: 'info' });
+    };
+    const { isRefreshing, handleTouchStart, handleTouchMove, handleTouchEnd, scrollRef } = usePullToRefresh(handleRefresh);
 
     const changeDate = (amount: number) => {
+        triggerHapticFeedback();
         setSelectedDate(prev => {
             const newDate = new Date(prev);
             newDate.setDate(newDate.getDate() + amount);
@@ -26,10 +40,11 @@ const DiaryScreen: React.FC = () => {
         });
     };
 
-    const handleDelete = (index: number) => {
-        const mealToDelete = loggedMeals[index];
-        if (mealToDelete && window.confirm(`Are you sure you want to delete "${mealToDelete.name}"?`)) {
+    const handleDelete = (index: number, mealName: string) => {
+        triggerHapticFeedback();
+        if (window.confirm(`Are you sure you want to delete "${mealName}"?`)) {
             handleMealRemoved(index);
+            showToast({ text: `${mealName} deleted.`, type: 'info' });
         }
     };
 
@@ -58,24 +73,31 @@ const DiaryScreen: React.FC = () => {
     }, [mealsForDay]);
 
     return (
-        <div className="bg-background dark:bg-dark-background min-h-full">
+        <div 
+            className="bg-background dark:bg-dark-background min-h-full flex flex-col"
+            ref={scrollRef as React.RefObject<HTMLDivElement>}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+        >
+            {isRefreshing && <PullToRefreshIndicator />}
             <header className="bg-background dark:bg-dark-background p-4 sticky top-0 z-10 space-y-4">
                 <div className="flex justify-between items-center">
-                    <button onClick={() => changeDate(-1)} className="p-2"><ChevronLeftIcon className="w-6 h-6 text-text-main dark:text-dark-text-main" /></button>
+                    <button onClick={() => changeDate(-1)} className="p-2 transition-transform active:scale-95"><ChevronLeftIcon className="w-6 h-6 text-text-main dark:text-dark-text-main" /></button>
                     <div className="text-center">
                         <div className="flex items-center justify-center gap-2">
                             <h1 className="text-2xl font-bold text-text-main dark:text-dark-text-main font-montserrat">{formatDate(selectedDate)}</h1>
-                            <button onClick={openRemindersModal} className="p-1 text-text-light dark:text-dark-text-light hover:text-primary dark:hover:text-primary transition-colors">
+                            <button onClick={() => { triggerHapticFeedback(); openRemindersModal(); }} className="p-1 text-text-light dark:text-dark-text-light hover:text-primary dark:hover:text-primary transition-colors transition-transform active:scale-95">
                                 <BellIcon className="w-5 h-5" />
                             </button>
                         </div>
                         <p className="text-sm text-text-light dark:text-dark-text-light">{selectedDate.getFullYear()}</p>
                     </div>
-                    <button onClick={() => changeDate(1)} className="p-2"><ChevronRightIcon className="w-6 h-6 text-text-main dark:text-dark-text-main" /></button>
+                    <button onClick={() => changeDate(1)} className="p-2 transition-transform active:scale-95"><ChevronRightIcon className="w-6 h-6 text-text-main dark:text-dark-text-main" /></button>
                 </div>
             </header>
             
-            <div className="p-4 space-y-6">
+            <div className="p-4 space-y-6 flex-1 overflow-y-auto">
                 <div className="bg-card dark:bg-dark-card rounded-2xl p-4 shadow-sm flex justify-around text-center">
                     <div>
                         <p className="font-bold text-lg text-primary">{summary.calories}</p>
@@ -119,28 +141,12 @@ const DiaryScreen: React.FC = () => {
                                 </div>
                                 <div className="space-y-2 divide-y divide-light-gray dark:divide-dark-border">
                                     {meals.map((meal) => (
-                                        <div 
+                                        <MealItemWithSwipe 
                                             key={meal.originalIndex}
-                                            className="flex items-center pt-2 w-full text-left first:pt-0"
-                                        >
-                                            <button 
-                                                onClick={() => viewMealDetail(meal.originalIndex)}
-                                                className="flex-1 flex items-center text-left p-2 -m-2 rounded-lg hover:bg-light-gray dark:hover:bg-dark-border"
-                                            >
-                                                <div className="flex-1">
-                                                    <p className="font-medium text-text-main dark:text-dark-text-main">{meal.name}</p>
-                                                    <p className="text-sm text-text-light dark:text-dark-text-light">{meal.calories} cal</p>
-                                                </div>
-                                                <ChevronRightIcon className="w-5 h-5 text-medium-gray" />
-                                            </button>
-                                            <button
-                                                onClick={() => handleDelete(meal.originalIndex)}
-                                                className="p-2 ml-2 text-medium-gray hover:text-red-500 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500/50"
-                                                aria-label={`Delete ${meal.name}`}
-                                            >
-                                                <TrashIcon className="w-5 h-5" />
-                                            </button>
-                                        </div>
+                                            meal={meal}
+                                            onViewDetail={viewMealDetail}
+                                            onDelete={handleDelete}
+                                        />
                                     ))}
                                 </div>
                             </div>
@@ -150,6 +156,60 @@ const DiaryScreen: React.FC = () => {
             </div>
 
             {/* Removed the fixed bottom-24 right-8 FAB as logging is now handled by BottomNav */}
+        </div>
+    );
+};
+
+// New component to encapsulate swipe functionality
+const MealItemWithSwipe: React.FC<{ 
+    meal: Meal & { originalIndex: number }; 
+    onViewDetail: (index: number) => void; 
+    onDelete: (index: number, name: string) => void;
+}> = ({ meal, onViewDetail, onDelete }) => {
+    const { translateX, bind, showDelete } = useSwipeToDelete();
+    const { triggerHapticFeedback } = useAppContext();
+
+    const handleDeleteClick = () => {
+        onDelete(meal.originalIndex, meal.name);
+    };
+
+    const handleViewClick = () => {
+        triggerHapticFeedback();
+        onViewDetail(meal.originalIndex);
+    };
+
+    return (
+        <div className="relative overflow-hidden pt-2 first:pt-0">
+            <div 
+                className="absolute inset-y-0 right-0 flex items-center bg-red-500 text-white transition-all duration-300"
+                style={{ width: showDelete ? '100px' : '0px', transform: `translateX(${showDelete ? '0' : '100'}%)` }}
+            >
+                {showDelete && (
+                    <button 
+                        onClick={handleDeleteClick} 
+                        className="h-full w-full flex items-center justify-center transition-transform active:scale-95"
+                        aria-label={`Delete ${meal.name}`}
+                    >
+                        <TrashIcon className="w-6 h-6" />
+                    </button>
+                )}
+            </div>
+            <div
+                {...bind()}
+                style={{ transform: `translateX(${translateX}px)` }}
+                className="flex items-center w-full text-left transition-transform duration-200 bg-card dark:bg-dark-card rounded-lg"
+            >
+                <button 
+                    onClick={handleViewClick}
+                    className="flex-1 flex items-center text-left p-2 -m-2 rounded-lg hover:bg-light-gray dark:hover:bg-dark-border transition-transform active:scale-[0.98]"
+                >
+                    <div className="flex-1">
+                        <p className="font-medium text-text-main dark:text-dark-text-main">{meal.name}</p>
+                        <p className="text-sm text-text-light dark:text-dark-text-light">{meal.calories} cal</p>
+                    </div>
+                    <ChevronRightIcon className="w-5 h-5 text-medium-gray" />
+                </button>
+            </div>
         </div>
     );
 };

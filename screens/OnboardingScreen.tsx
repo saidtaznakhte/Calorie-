@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { UserProfile, Gender, ActivityLevel, PrimaryGoal, UnitSystem } from '../types';
 import { useAppContext } from '../contexts/AppContext';
@@ -13,43 +12,52 @@ const ProgressBar: React.FC<{ step: number; totalSteps: number }> = ({ step, tot
     </div>
 );
 
-const StepButton: React.FC<{ onClick: () => void; text: string; disabled?: boolean; }> = ({ onClick, text, disabled }) => (
-    <button
-        onClick={onClick}
-        disabled={disabled}
-        className="w-full bg-primary text-white font-bold py-4 rounded-xl text-lg shadow-md hover:bg-primary/90 transition-colors disabled:bg-gray-400 dark:disabled:bg-dark-gray"
-    >
-        {text}
-    </button>
-);
-
-const SelectionCard: React.FC<{ title: string; description: string; isSelected: boolean; onSelect: () => void; }> = ({ title, description, isSelected, onSelect }) => (
-     <button onClick={onSelect} className={`w-full p-4 rounded-xl text-left border-2 transition-all ${isSelected ? 'bg-primary-light dark:bg-primary/20 border-primary' : 'bg-card dark:bg-dark-card border-light-gray dark:border-dark-border'}`}>
-        <h3 className={`font-bold text-lg ${isSelected ? 'text-primary' : 'text-text-main dark:text-dark-text-main'} font-montserrat`}>{title}</h3>
-        <p className="text-sm text-text-light dark:text-dark-text-light">{description}</p>
-    </button>
-);
-
-const UnitSelector: React.FC<{ selected: UnitSystem; onSelect: (system: UnitSystem) => void }> = ({ selected, onSelect }) => (
-    <div className="flex p-1 bg-light-gray dark:bg-dark-border rounded-full">
+const StepButton: React.FC<{ onClick: () => void; text: string; disabled?: boolean; }> = ({ onClick, text, disabled }) => {
+    const { triggerHapticFeedback } = useAppContext();
+    return (
         <button
-            onClick={() => onSelect(UnitSystem.Imperial)}
-            className={`w-1/2 py-2 rounded-full font-semibold transition-colors ${selected === UnitSystem.Imperial ? 'bg-card dark:bg-dark-card text-primary shadow' : 'text-text-light dark:text-dark-text-light'}`}
+            onClick={() => { triggerHapticFeedback(); onClick(); }}
+            disabled={disabled}
+            className="w-full bg-primary text-white font-bold py-4 rounded-xl text-lg shadow-md hover:bg-primary/90 transition-colors disabled:bg-gray-400 dark:disabled:bg-dark-gray transition-transform active:scale-95"
         >
-            Imperial (lbs, ft)
+            {text}
         </button>
-        <button
-            onClick={() => onSelect(UnitSystem.Metric)}
-            className={`w-1/2 py-2 rounded-full font-semibold transition-colors ${selected === UnitSystem.Metric ? 'bg-card dark:bg-dark-card text-primary shadow' : 'text-text-light dark:text-dark-text-light'}`}
-        >
-            Metric (kg, cm)
+    );
+};
+
+const SelectionCard: React.FC<{ title: string; description: string; isSelected: boolean; onSelect: () => void; }> = ({ title, description, isSelected, onSelect }) => {
+    const { triggerHapticFeedback } = useAppContext();
+    return (
+        <button onClick={() => { triggerHapticFeedback(); onSelect(); }} className={`w-full p-4 rounded-xl text-left border-2 transition-all transition-transform active:scale-95 ${isSelected ? 'bg-primary-light dark:bg-primary/20 border-primary' : 'bg-card dark:bg-dark-card border-light-gray dark:border-dark-border'}`}>
+            <h3 className={`font-bold text-lg ${isSelected ? 'text-primary' : 'text-text-main dark:text-dark-text-main'} font-montserrat`}>{title}</h3>
+            <p className="text-sm text-text-light dark:text-dark-text-light">{description}</p>
         </button>
-    </div>
-);
+    );
+};
+
+const UnitSelector: React.FC<{ selected: UnitSystem; onSelect: (system: UnitSystem) => void }> = ({ selected, onSelect }) => {
+    const { triggerHapticFeedback } = useAppContext();
+    return (
+        <div className="flex p-1 bg-light-gray dark:bg-dark-border rounded-full">
+            <button
+                onClick={() => { triggerHapticFeedback(); onSelect(UnitSystem.Imperial); }}
+                className={`w-1/2 py-2 rounded-full font-semibold transition-colors transition-transform active:scale-95 ${selected === UnitSystem.Imperial ? 'bg-card dark:bg-dark-card text-primary shadow' : 'text-text-light dark:text-dark-text-light'}`}
+            >
+                Imperial (lbs, ft)
+            </button>
+            <button
+                onClick={() => { triggerHapticFeedback(); onSelect(UnitSystem.Metric); }}
+                className={`w-1/2 py-2 rounded-full font-semibold transition-colors transition-transform active:scale-95 ${selected === UnitSystem.Metric ? 'bg-card dark:bg-dark-card text-primary shadow' : 'text-text-light dark:text-dark-text-light'}`}
+            >
+                Metric (kg, cm)
+            </button>
+        </div>
+    );
+};
 
 
 const OnboardingScreen: React.FC = () => {
-    const { register, users, cancelRegistration } = useAppContext();
+    const { register, users, cancelRegistration, triggerHapticFeedback } = useAppContext();
     const [step, setStep] = useState(1);
     const totalSteps = 6;
     
@@ -64,6 +72,7 @@ const OnboardingScreen: React.FC = () => {
     
     const handleNext = () => setStep(s => Math.min(s + 1, totalSteps));
     const handleBack = () => {
+        triggerHapticFeedback();
         if (step === 1 && hasUsers) {
             cancelRegistration();
         } else {
@@ -241,7 +250,7 @@ const OnboardingScreen: React.FC = () => {
     return (
         <div className="max-w-md mx-auto h-screen bg-background dark:bg-dark-background font-sans flex flex-col p-6 animate-fade-in">
             <header className="flex items-center">
-                <button onClick={handleBack} className="p-2 -ml-2">
+                <button onClick={handleBack} className="p-2 -ml-2 transition-transform active:scale-95">
                     <BackIcon className="w-6 h-6 text-text-main dark:text-dark-text-main" />
                 </button>
             </header>

@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { WaterIcon, PlusIcon, MinusIcon, RefreshIcon } from './Icons'; // Import necessary icons
+import { useAppContext } from '../contexts/AppContext';
 
 interface WaterIntakePodProps {
   currentIntake: number;
@@ -14,21 +14,25 @@ interface WaterIntakePodProps {
 const DEFAULT_GLASS_SIZE = 8; // fl oz
 
 const WaterIntakePod: React.FC<WaterIntakePodProps> = ({ currentIntake, goal, onAddWater, onRemoveWater, onResetWater, showToast }) => {
+  const { triggerHapticFeedback } = useAppContext();
   const percentage = goal > 0 ? Math.min((currentIntake / goal) * 100, 100) : 0;
-  const totalGlasses = Math.ceil(goal / DEFAULT_GLASS_SIZE);
-  const filledGlasses = Math.floor(currentIntake / DEFAULT_GLASS_SIZE);
+  // const totalGlasses = Math.ceil(goal / DEFAULT_GLASS_SIZE); // Not used with current design
+  // const filledGlasses = Math.floor(currentIntake / DEFAULT_GLASS_SIZE); // Not used with current design
 
   const handleAddGlass = () => {
+    triggerHapticFeedback();
     onAddWater(DEFAULT_GLASS_SIZE);
-    showToast({ text: `+${DEFAULT_GLASS_SIZE} fl oz water!`, type: 'success' });
+    // Toast is now handled by `handleWaterIntakeUpdate` in AppContext
   };
 
   const handleRemoveGlass = () => {
+    triggerHapticFeedback();
     onRemoveWater(DEFAULT_GLASS_SIZE);
-    showToast({ text: `-${DEFAULT_GLASS_SIZE} fl oz water.`, type: 'info' });
+    // Toast is now handled by `handleWaterIntakeUpdate` in AppContext
   };
 
   const handleReset = () => {
+    triggerHapticFeedback();
     if (window.confirm("Are you sure you want to reset your water intake for today?")) {
       onResetWater();
       showToast({ text: "Water intake reset!", type: 'info' });
@@ -42,7 +46,7 @@ const WaterIntakePod: React.FC<WaterIntakePodProps> = ({ currentIntake, goal, on
             <h2 className="text-lg font-semibold text-text-main dark:text-dark-text-main">Hydration</h2>
             <button
                 onClick={handleReset}
-                className="p-2 rounded-full text-medium-gray dark:text-dark-gray hover:bg-light-gray dark:hover:bg-dark-border transition-colors"
+                className="p-2 rounded-full text-medium-gray dark:text-dark-gray hover:bg-light-gray dark:hover:bg-dark-border transition-colors transition-transform active:scale-95"
                 aria-label="Reset water intake"
             >
                 <RefreshIcon className="w-5 h-5" />
@@ -69,7 +73,7 @@ const WaterIntakePod: React.FC<WaterIntakePodProps> = ({ currentIntake, goal, on
                     onClick={handleRemoveGlass}
                     disabled={currentIntake <= 0}
                     className="w-16 h-10 bg-fats/10 border border-fats/30 text-fats dark:text-fats-light font-bold rounded-full text-lg
-                               transition-all duration-300 hover:scale-110 hover:shadow-lg hover:bg-fats/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                               transition-all duration-300 hover:scale-110 hover:shadow-lg hover:bg-fats/20 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
                                aria-label={`Remove ${DEFAULT_GLASS_SIZE} fl oz`}
                 >
                     -{DEFAULT_GLASS_SIZE}
@@ -78,7 +82,7 @@ const WaterIntakePod: React.FC<WaterIntakePodProps> = ({ currentIntake, goal, on
                     onClick={handleAddGlass}
                     disabled={currentIntake >= goal}
                     className="w-16 h-10 bg-fats/10 border border-fats/30 text-fats dark:text-fats-light font-bold rounded-full text-lg
-                               transition-all duration-300 hover:scale-110 hover:shadow-lg hover:bg-fats/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                               transition-all duration-300 hover:scale-110 hover:shadow-lg hover:bg-fats/20 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
                                aria-label={`Add ${DEFAULT_GLASS_SIZE} fl oz`}
                 >
                     +{DEFAULT_GLASS_SIZE}

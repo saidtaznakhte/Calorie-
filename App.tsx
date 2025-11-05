@@ -19,6 +19,8 @@ import BarcodeScannerScreen from './screens/BarcodeScannerScreen';
 import LogActivityScreen from './screens/LogActivityScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
 import OnboardingScreen from './screens/OnboardingScreen';
+// FIX: Changed ManualLogScreen import to a named import.
+// FIX: Changed ManualLogScreen import from a named import to a default import.
 import ManualLogScreen from './screens/ManualLogScreen';
 import MealPrepCreatorScreen from './screens/MealPrepCreatorScreen';
 import MealDetailScreen from './screens/MealDetailScreen';

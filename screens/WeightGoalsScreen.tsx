@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Page, UnitSystem } from '../types';
 import { BackIcon } from '../components/Icons';
@@ -37,13 +36,14 @@ const WeightInput: React.FC<{
 };
 
 const WeightGoalsScreen: React.FC = () => {
-    const { navigateTo, currentWeight, goalWeight, handleWeightUpdate: onSave, profile } = useAppContext();
+    const { navigateTo, currentWeight, goalWeight, handleWeightUpdate: onSave, profile, triggerHapticFeedback } = useAppContext();
     const [current, setCurrent] = useState(currentWeight);
     const [goal, setGoal] = useState(goalWeight);
     const { unitSystem } = profile;
     const isMetric = unitSystem === UnitSystem.Metric;
 
     const handleSave = () => {
+        triggerHapticFeedback();
         onSave(current, goal);
     };
 
@@ -54,7 +54,7 @@ const WeightGoalsScreen: React.FC = () => {
     return (
          <div className="p-4 flex flex-col h-full bg-background dark:bg-dark-background">
             <header className="flex items-center mb-6">
-                <button onClick={() => navigateTo(Page.Settings)} className="p-2 -ml-2">
+                <button onClick={() => { triggerHapticFeedback(); navigateTo(Page.Settings); }} className="p-2 -ml-2 transition-transform active:scale-95">
                     <BackIcon className="w-6 h-6 text-text-main dark:text-dark-text-main" />
                 </button>
                 <h1 className="text-xl font-bold text-text-main dark:text-dark-text-main mx-auto font-montserrat">Set Weight Goals</h1>
@@ -82,7 +82,7 @@ const WeightGoalsScreen: React.FC = () => {
             </div>
 
             <div className="mt-6">
-                <button onClick={handleSave} className="w-full bg-primary text-white font-bold py-4 rounded-xl text-lg shadow-md hover:bg-primary/90 transition-colors">
+                <button onClick={handleSave} className="w-full bg-primary text-white font-bold py-4 rounded-xl text-lg shadow-md hover:bg-primary/90 transition-colors transition-transform active:scale-95">
                     Update Goals
                 </button>
             </div>

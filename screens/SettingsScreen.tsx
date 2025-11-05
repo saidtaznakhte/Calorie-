@@ -1,5 +1,3 @@
-
-
 import React from 'react';
 import { Page, ThemePreference } from '../types';
 import { ChevronRightIcon, MoonIcon, SunIcon, DesktopIcon } from '../components/Icons';
@@ -19,7 +17,7 @@ const SettingsListItem: React.FC<{
   };
 
   return (
-    <button onClick={handleClick} className="w-full flex items-center py-4">
+    <button onClick={handleClick} className="w-full flex items-center py-4 transition-transform active:scale-95">
       <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-4 text-lg ${isDestructive ? 'bg-red-100 dark:bg-red-500/20' : 'bg-light-gray dark:bg-dark-border'}`}>
         {icon}
       </div>
@@ -46,7 +44,7 @@ const ThemeToggleButton: React.FC<{
     };
 
     return (
-        <button onClick={handleClick} className={`flex-1 flex flex-col items-center justify-center p-3 rounded-xl transition-colors ${isActive ? 'bg-primary-light dark:bg-primary/20' : 'hover:bg-light-gray dark:hover:bg-dark-border'}`}>
+        <button onClick={handleClick} className={`flex-1 flex flex-col items-center justify-center p-3 rounded-xl transition-colors transition-transform active:scale-95 ${isActive ? 'bg-primary-light dark:bg-primary/20' : 'hover:bg-light-gray dark:hover:bg-dark-border'}`}>
             <Icon className={`w-6 h-6 mb-1 ${isActive ? 'text-primary' : 'text-text-light dark:text-dark-text-light'}`} />
             <span className={`text-sm font-semibold ${isActive ? 'text-primary' : 'text-text-main dark:text-dark-text-main'}`}>{label}</span>
         </button>

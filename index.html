@@ -44,6 +44,14 @@
               'carbs-light': '#FFFBEB', /* Added for light variant of carbs */
               'fats': '#3B82F6',
               'fats-light': '#DBEAFE', /* Added for light variant of fats */
+
+              // New gradient colors for header
+              'morning-start': '#FFECD2',
+              'morning-end': '#FCB69F',
+              'afternoon-start': '#A1C4FD',
+              'afternoon-end': '#C2E9FB',
+              'evening-start': '#4D366D',
+              'evening-end': '#2B1A42',
             },
             keyframes: {
               'fade-in': {
@@ -65,7 +73,25 @@
               'checkmark-bounce': {
                 '0%': { transform: 'scale(0.5)', opacity: '0' },
                 '70%': { transform: 'scale(1.1)', opacity: '1' },
-                '100%': { transform: 'scale(1)', opacity: '1' },
+                '100%': { transform: 'scale(1)', opacity: '1'},
+              },
+              'confetti-fall': {
+                '0%': { transform: 'translateY(-100%) rotateZ(0deg)', opacity: '0' },
+                '10%': { opacity: '1' },
+                '100%': { transform: 'translateY(100vh) rotateZ(720deg)', opacity: '0' },
+              },
+              'rain-fall': {
+                '0%': { transform: 'translateY(-100%)' },
+                '100%': { transform: 'translateY(100vh)' },
+              },
+              'snow-fall': {
+                '0%': { transform: 'translateY(-100%)', opacity: '0' },
+                '50%': { opacity: '1' },
+                '100%': { transform: 'translateY(100vh)', opacity: '0' },
+              },
+              'app-logo-spin': {
+                '0%': { transform: 'rotate(0deg)' },
+                '100%': { transform: 'rotate(360deg)' },
               },
             },
             animation: {
@@ -74,6 +100,10 @@
               'wave': 'wave 4s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite',
               'pulse': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
               'checkmark-bounce': 'checkmark-bounce 0.4s ease-out forwards',
+              'confetti-fall': 'confetti-fall 3s ease-in-out forwards',
+              'rain-fall': 'rain-fall 1s linear infinite',
+              'snow-fall': 'snow-fall 8s linear infinite',
+              'app-logo-spin': 'app-logo-spin 1s linear infinite',
             }
           }
         }
@@ -93,7 +123,7 @@
 </head>
   <body class="bg-background dark:bg-dark-background">
     <div id="root"></div>
-    <script type="module" src="./index.tsx"></script>
+    <script type="module" src="./index.js"></script>
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {

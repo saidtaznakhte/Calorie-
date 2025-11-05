@@ -1,4 +1,3 @@
-
 import React, { useMemo } from 'react';
 import { Page } from '../types';
 import { BackIcon } from '../components/Icons';
@@ -7,7 +6,7 @@ import { formatDate, toYYYYMMDD } from '../utils/dateUtils';
 import { useAppContext } from '../contexts/AppContext';
 
 const WaterHistoryScreen: React.FC = () => {
-    const { navigateTo, waterIntakeHistory: history, waterGoal, theme } = useAppContext();
+    const { navigateTo, waterIntakeHistory: history, waterGoal, theme, triggerHapticFeedback } = useAppContext();
     const isDarkMode = theme === 'dark';
     const axisColor = isDarkMode ? '#9CA3AF' : '#6B7280';
     const gridColor = isDarkMode ? '#374151' : '#E5E7EB';
@@ -45,7 +44,7 @@ const WaterHistoryScreen: React.FC = () => {
     return (
         <div className="p-4 flex flex-col h-full bg-background dark:bg-dark-background">
             <header className="flex items-center mb-6">
-                <button onClick={() => navigateTo(Page.Settings)} className="p-2 -ml-2">
+                <button onClick={() => { triggerHapticFeedback(); navigateTo(Page.Settings); }} className="p-2 -ml-2 transition-transform active:scale-95">
                     <BackIcon className="w-6 h-6 text-text-main dark:text-dark-text-main" />
                 </button>
                 <h1 className="text-xl font-bold text-text-main dark:text-dark-text-main mx-auto font-montserrat">Water Intake History</h1>

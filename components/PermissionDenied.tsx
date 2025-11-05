@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { CameraIcon, LockIcon, RefreshIcon } from './Icons';
+import { useAppContext } from '../contexts/AppContext';
 
 interface PermissionDeniedProps {
   onGoBack: () => void;
@@ -15,6 +15,7 @@ const InstructionStep: React.FC<{ icon: React.ReactNode; text: string; }> = ({ i
 );
 
 const PermissionDenied: React.FC<PermissionDeniedProps> = ({ onGoBack, featureName }) => {
+  const { triggerHapticFeedback } = useAppContext();
   return (
     <div className="absolute inset-0 bg-white dark:bg-gray-900 z-40 flex flex-col items-center justify-center p-8 text-center animate-fade-in">
       <div className="w-24 h-24 bg-red-100 dark:bg-red-900/50 rounded-full flex items-center justify-center mb-6">
@@ -32,8 +33,8 @@ const PermissionDenied: React.FC<PermissionDeniedProps> = ({ onGoBack, featureNa
       </div>
 
       <button
-        onClick={onGoBack}
-        className="w-full max-w-xs bg-primary text-white font-bold py-3 px-6 rounded-xl text-lg transition-transform hover:scale-105"
+        onClick={() => { triggerHapticFeedback(); onGoBack(); }}
+        className="w-full max-w-xs bg-primary text-white font-bold py-3 px-6 rounded-xl text-lg transition-transform hover:scale-105 active:scale-95"
       >
         Go Back
       </button>

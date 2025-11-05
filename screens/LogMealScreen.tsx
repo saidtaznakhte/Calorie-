@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Page, MealType, FoodSearchResult, Meal, FoodCategory, PreppedMeal } from '../types';
 import { BackIcon, CameraIcon, SearchIcon, BarcodeIcon, PlusIcon, StarIcon, ChefHatIcon, TrashIcon, ChevronRightIcon, EditIcon, XIcon } from '../components/Icons';
@@ -7,6 +6,7 @@ import { toYYYYMMDD } from '../utils/dateUtils';
 import { useAppContext } from '../contexts/AppContext';
 import { popularFoods } from '../data/foodData';
 import LogServingModal from '../components/LogServingModal'; // Import the new modal
+import Skeleton from '../components/Skeleton'; // Import Skeleton component
 
 const getDefaultMealType = (): MealType => {
     const currentHour = new Date().getHours();
@@ -20,14 +20,15 @@ const MealTypeFilter: React.FC<{
   selectedType: MealType;
   onSelectType: (type: MealType) => void;
 }> = ({ selectedType, onSelectType }) => {
+  const { triggerHapticFeedback } = useAppContext();
   const mealTypes = Object.values(MealType);
   return (
     <div className="flex space-x-3 overflow-x-auto pb-3 -mx-4 px-4">
       {mealTypes.map(type => (
         <button
           key={type}
-          onClick={() => onSelectType(type)}
-          className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors whitespace-nowrap ${
+          onClick={() => { triggerHapticFeedback(); onSelectType(type); }}
+          className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors whitespace-nowrap transition-transform active:scale-95 ${
             selectedType === type
               ? 'bg-primary text-white shadow'
               : 'bg-card dark:bg-dark-card text-text-main dark:text-dark-text-main'
@@ -45,14 +46,15 @@ const FoodCategoryFilter: React.FC<{
   selectedCategory: FoodCategory;
   onSelectCategory: (category: FoodCategory) => void;
 }> = ({ selectedCategory, onSelectCategory }) => {
+  const { triggerHapticFeedback } = useAppContext();
   const categories = Object.values(FoodCategory);
   return (
     <div className="flex space-x-3 overflow-x-auto pb-3 -mx-4 px-4">
       {categories.map(category => (
         <button
           key={category}
-          onClick={() => onSelectCategory(category)}
-          className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors whitespace-nowrap ${
+          onClick={() => { triggerHapticFeedback(); onSelectCategory(category); }}
+          className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors whitespace-nowrap transition-transform active:scale-95 ${
             selectedCategory === category
               ? 'bg-primary text-white shadow'
               : 'bg-card dark:bg-dark-card text-text-main dark:text-dark-text-main'
@@ -79,10 +81,11 @@ const SearchResultItem: React.FC<{
     isFavorite?: boolean; // Optional for PreppedMeal
     onToggleFavorite?: (item: FoodSearchResult) => void; // Optional for PreppedMeal
 }> = ({ item, onSelect, isFavorite, onToggleFavorite }) => {
+    const { triggerHapticFeedback } = useAppContext();
     const isPreppedMeal = 'ingredients' in item;
 
     return (
-        <div onClick={() => onSelect(item)} className="flex items-start p-3 bg-card dark:bg-dark-card rounded-2xl cursor-pointer hover:shadow-md transition-shadow dark:border dark:border-transparent dark:hover:border-primary/20">
+        <div onClick={() => { triggerHapticFeedback(); onSelect(item); }} className="flex items-start p-3 bg-card dark:bg-dark-card rounded-2xl cursor-pointer hover:shadow-md transition-shadow dark:border dark:border-transparent dark:hover:border-primary/20 transition-transform active:scale-[0.98]">
             <img 
                 src={isPreppedMeal ? `https://placehold.co/64x64/FBBF24/FFFBEB?text=🍽️` : item.imageUrl || `https://placehold.co/64x64/E0F8F2/00C795?text=🍴`}
                 alt={item.name} 
@@ -95,9 +98,10 @@ const SearchResultItem: React.FC<{
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
+                                triggerHapticFeedback();
                                 onToggleFavorite(item as FoodSearchResult);
                             }}
-                            className="p-1 -mt-1 -mr-1 text-medium-gray dark:text-dark-gray transition-colors flex-shrink-0"
+                            className="p-1 -mt-1 -mr-1 text-medium-gray dark:text-dark-gray transition-colors flex-shrink-0 transition-transform active:scale-95"
                             aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
                         >
                             <StarIcon filled={isFavorite} className={`w-6 h-6 ${isFavorite ? 'text-carbs' : 'hover:text-carbs/70'}`} />
@@ -134,6 +138,7 @@ const LogMealScreen: React.FC = () => {
         // FIX: Destructure handleMealLogged from useAppContext
         handleMealLogged,
         showToast,
+        triggerHapticFeedback, // Added triggerHapticFeedback
     } = useAppContext();
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState<FoodSearchResult[]>([]);
@@ -233,7 +238,7 @@ const LogMealScreen: React.FC = () => {
     return (
         <div className="p-4 flex flex-col h-full bg-background dark:bg-dark-background">
             <header className="flex items-center mb-4">
-                <button onClick={() => navigateTo(Page.Dashboard)} className="p-2 -ml-2">
+                <button onClick={() => { triggerHapticFeedback(); navigateTo(Page.Dashboard); }} className="p-2 -ml-2 transition-transform active:scale-95">
                     <BackIcon className="w-6 h-6 text-text-main dark:text-dark-text-main" />
                 </button>
                 <h1 className="text-xl font-bold text-text-main dark:text-dark-text-main mx-auto font-montserrat">Log Meal</h1>
@@ -241,18 +246,18 @@ const LogMealScreen: React.FC = () => {
             </header>
 
             <div className="flex space-x-2 mb-4">
-                <button onClick={() => navigateTo(Page.Camera)} className="flex-1 flex items-center justify-center py-3 bg-card dark:bg-dark-card rounded-lg shadow-sm">
+                <button onClick={() => { triggerHapticFeedback(); navigateTo(Page.Camera); }} className="flex-1 flex items-center justify-center py-3 bg-card dark:bg-dark-card rounded-lg shadow-sm transition-transform active:scale-95">
                     <CameraIcon className="w-5 h-5 mr-2 text-primary"/>
                     <span className="font-semibold text-sm text-text-main dark:text-dark-text-main">Snap Meal</span>
                 </button>
-                <button onClick={() => navigateTo(Page.BarcodeScanner)} className="flex-1 flex items-center justify-center py-3 bg-card dark:bg-dark-card rounded-lg shadow-sm">
+                <button onClick={() => { triggerHapticFeedback(); navigateTo(Page.BarcodeScanner); }} className="flex-1 flex items-center justify-center py-3 bg-card dark:bg-dark-card rounded-lg shadow-sm transition-transform active:scale-95">
                     <BarcodeIcon className="w-5 h-5 mr-2 text-primary"/>
                     <span className="font-semibold text-sm text-text-main dark:text-dark-text-main">Scan Code</span>
                 </button>
-                 <button onClick={() => navigateTo(Page.ManualLog)} title="Manual Entry" className="flex items-center justify-center p-3 bg-card dark:bg-dark-card rounded-lg shadow-sm aspect-square">
+                 <button onClick={() => { triggerHapticFeedback(); navigateTo(Page.ManualLog); }} title="Manual Entry" className="flex items-center justify-center p-3 bg-card dark:bg-dark-card rounded-lg shadow-sm aspect-square transition-transform active:scale-95">
                     <EditIcon className="w-5 h-5 text-primary"/>
                 </button>
-                 <button onClick={() => navigateTo(Page.MealPrepCreator)} title="Meal Prep" className="flex items-center justify-center p-3 bg-card dark:bg-dark-card rounded-lg shadow-sm aspect-square">
+                 <button onClick={() => { triggerHapticFeedback(); navigateTo(Page.MealPrepCreator); }} title="Meal Prep" className="flex items-center justify-center p-3 bg-card dark:bg-dark-card rounded-lg shadow-sm aspect-square transition-transform active:scale-95">
                     <ChefHatIcon className="w-5 h-5 text-primary"/>
                 </button>
             </div>
@@ -271,8 +276,8 @@ const LogMealScreen: React.FC = () => {
                 />
                 {searchQuery && !isSearching && (
                     <button 
-                        onClick={() => setSearchQuery('')}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-medium-gray hover:text-text-main dark:hover:text-dark-text-main"
+                        onClick={() => { triggerHapticFeedback(); setSearchQuery(''); }}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-medium-gray hover:text-text-main dark:hover:text-dark-text-main transition-transform active:scale-95"
                         aria-label="Clear search"
                     >
                         <XIcon className="w-5 h-5" />
@@ -287,7 +292,22 @@ const LogMealScreen: React.FC = () => {
             <FoodCategoryFilter selectedCategory={activeCategory} onSelectCategory={setActiveCategory} />
             
             <div className="flex-1 overflow-y-auto mt-4 space-y-3">
-                {hasSearched.current && !isSearching && searchResults.length === 0 ? (
+                {isSearching ? (
+                    Array.from({ length: 3 }).map((_, i) => (
+                        <div key={i} className="flex items-start p-3 bg-card dark:bg-dark-card rounded-2xl shadow-sm">
+                            <Skeleton className="w-16 h-16 rounded-lg mr-4" />
+                            <div className="flex-1 space-y-2">
+                                <Skeleton className="h-4 w-3/4" />
+                                <Skeleton className="h-3 w-1/2" />
+                                <div className="flex space-x-2 mt-2">
+                                    <Skeleton className="h-3 w-1/4" />
+                                    <Skeleton className="h-3 w-1/4" />
+                                    <Skeleton className="h-3 w-1/4" />
+                                </div>
+                            </div>
+                        </div>
+                    ))
+                ) : hasSearched.current && searchResults.length === 0 ? (
                     <div className="text-center py-10 px-4 text-medium-gray dark:text-dark-gray">
                         <p className="font-semibold text-text-main dark:text-dark-text-main">No Results Found</p>
                         <p className="text-sm mt-1">We couldn't find any food matching "{searchQuery}".</p>

@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Page, MacroGoals } from '../types';
 import { BackIcon } from '../components/Icons';
@@ -31,7 +30,7 @@ const MacroSlider: React.FC<{
 );
 
 const AdjustMacrosScreen: React.FC = () => {
-    const { navigateTo, macroGoals: currentGoals, handleMacrosUpdate: onSave, profile, currentWeight } = useAppContext();
+    const { navigateTo, macroGoals: currentGoals, handleMacrosUpdate: onSave, profile, currentWeight, triggerHapticFeedback } = useAppContext();
     const [goals, setGoals] = useState(currentGoals);
 
     const totalCalories = useMemo(() => {
@@ -39,18 +38,20 @@ const AdjustMacrosScreen: React.FC = () => {
     }, [goals]);
 
     const handleReset = () => {
+        triggerHapticFeedback();
         const recommendedGoals = calculateGoals(profile, currentWeight);
         setGoals(recommendedGoals);
     };
 
     const handleSave = () => {
+        triggerHapticFeedback();
         onSave(goals);
     };
 
     return (
         <div className="p-4 flex flex-col h-full bg-background dark:bg-dark-background">
             <header className="flex items-center mb-6">
-                <button onClick={() => navigateTo(Page.Settings)} className="p-2 -ml-2">
+                <button onClick={() => { triggerHapticFeedback(); navigateTo(Page.Settings); }} className="p-2 -ml-2 transition-transform active:scale-95">
                     <BackIcon className="w-6 h-6 text-text-main dark:text-dark-text-main" />
                 </button>
                 <h1 className="text-xl font-bold text-text-main dark:text-dark-text-main mx-auto font-montserrat">Adjust Macronutrients</h1>
@@ -93,11 +94,11 @@ const AdjustMacrosScreen: React.FC = () => {
              <div className="mt-6">
                 <button 
                     onClick={handleReset} 
-                    className="w-full bg-light-gray dark:bg-dark-border text-text-main dark:text-dark-text-main font-bold py-3 rounded-xl text-lg mb-3 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                    className="w-full bg-light-gray dark:bg-dark-border text-text-main dark:text-dark-text-main font-bold py-3 rounded-xl text-lg mb-3 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors transition-transform active:scale-95"
                 >
                     Reset to Recommended
                 </button>
-                <button onClick={handleSave} className="w-full bg-primary text-white font-bold py-4 rounded-xl text-lg shadow-md hover:bg-primary/90 transition-colors">
+                <button onClick={handleSave} className="w-full bg-primary text-white font-bold py-4 rounded-xl text-lg shadow-md hover:bg-primary/90 transition-colors transition-transform active:scale-95">
                     Save Changes
                 </button>
             </div>

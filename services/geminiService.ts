@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import { MealAnalysis, MealType, FoodSearchResult, UserProfile, MacroGoals } from "../types";
 
@@ -229,20 +228,20 @@ export const getAIPersonalizedSuggestion = async (payload: SuggestionPayload): P
     if (!API_KEY) {
         // Mock data
         return new Promise(resolve => setTimeout(() => resolve([
-            "Great job hitting your calorie goal! Your average intake is right on target.",
-            "Your protein intake has been slightly below your goal this week. Try adding an extra serving of lean protein, like grilled chicken or a protein shake, to one of your meals.",
-            "Keep up the good work with your activity! Consider incorporating a new exercise, like swimming, to challenge your body in a different way."
+            "Your average protein intake is slightly below your goal. Try adding a protein-rich snack like a handful of almonds or Greek yogurt between meals.",
+            "Great job maintaining consistent calorie intake! Consider diversifying your workout routine with some strength training for better muscle development.",
+            "You've been active this week! For improved heart health, aim for at least 30 minutes of moderate cardio, like brisk walking or cycling, most days."
         ]), 1500));
     }
     
     const { profile, macroGoals, calorieGoal, avgNutrition, avgCaloriesBurned } = payload;
     
     const prompt = `
-        Act as a friendly, encouraging, and insightful AI fitness and nutrition coach.
-        Analyze the following user data, specifically comparing average performance against their goals for the last 7 days.
-        Provide 2-3 short, simple, and highly actionable suggestions to help them reach their goals.
-        Each suggestion must be a single sentence. The tone should be positive, motivational, and specific,
-        offering concrete food or activity examples where relevant.
+        Act as a friendly, encouraging, and highly specific AI fitness and nutrition coach.
+        Analyze the following user data, comparing average performance against their goals for the last 7 days.
+        Provide 2-3 short, actionable, and encouraging suggestions to help them reach their goals.
+        Each suggestion must be a single, concise sentence. The tone should be positive, motivational, and highly specific,
+        offering concrete food or activity examples, and focusing on small, achievable changes that reflect trends.
 
         User Profile:
         - Goal: ${profile.primaryGoal}
@@ -263,13 +262,16 @@ export const getAIPersonalizedSuggestion = async (payload: SuggestionPayload): P
         - Average Daily Fats Intake: ${avgNutrition.fats.toFixed(0)}g (Goal: ${macroGoals.fats}g)
         - Average Daily Calories Burned from Activity: ${avgCaloriesBurned.toFixed(0)} kcal
 
-        Based on these comparisons and trends, identify areas for improvement or encouragement.
-        For example:
-        - If protein is consistently low, suggest a high-protein snack like a handful of almonds or a Greek yogurt.
-        - If calorie intake is consistently too high for a weight loss goal, suggest a small, easy change like swapping a sugary drink for water or reducing a portion of high-fat foods.
-        - If activity is on track or slightly below, praise the effort and suggest a small, achievable increase like a 15-minute walk.
-        - If a macro is significantly over, suggest a healthy swap.
-        Ensure your suggestions are concise and impactful.
+        Based on these comparisons and trends over the last 7 days, identify one or two key areas for improvement or encouragement.
+        Formulate your suggestions to be highly specific and actionable, connecting directly to the data trends observed.
+
+        Examples of highly specific suggestions:
+        - "Your average protein intake is slightly below your goal. Try adding a protein-rich snack like a handful of almonds or Greek yogurt between meals to boost your intake by 5-10g."
+        - "You've been consistently slightly over your calorie goal; consider swapping one sugary drink per day for water to save around 150-200 calories."
+        - "Your activity levels are great! To challenge yourself further, try increasing your daily walk by 15 minutes or adding two short bodyweight sessions this week."
+        - "If your fats are high for a weight loss goal, consider grilling or baking instead of frying your proteins to reduce unhealthy fat intake."
+        - "To boost carb intake for muscle gain, try adding a banana or a small serving of oats post-workout for quick energy replenishment."
+        Ensure each suggestion is distinct, concise, impactful, and directly relevant to the user's recent performance and goals.
     `;
 
     try {

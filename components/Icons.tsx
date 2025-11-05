@@ -164,7 +164,7 @@ export const ChefHatIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
 
 export const WaterIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0L12 2.69z"></path>
+        <path d="M12 2.69l5.66 5.66a8 0 1 1-11.31 0L12 2.69z"></path>
     </svg>
 );
 
@@ -218,5 +218,22 @@ export const XCircleIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     <circle cx="12" cy="12" r="10"></circle>
     <line x1="15" y1="9" x2="9" y2="15"></line>
     <line x1="9" y1="9" x2="15" y2="15"></line>
+  </svg>
+);
+
+export const CloudRainIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 17.5l-2.5-2.5m5 0l-2.5 2.5m-2.5-12.5a4.5 4.5 0 0 1 9 0 3.5 3.5 0 0 1-6.91 0c-1.6 0-3.09 1.4-3.09 3.1z"></path>
+    <path d="M20 12h-4v2h4l-2 3"></path>
+    <path d="M4 12h4v2H4l2 3"></path>
+  </svg>
+);
+
+export const CloudSnowIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20 17.5a4.5 4.5 0 0 0-9 0c0 1.6-1.4 3-3 3s-3-1.4-3-3a3.5 3.5 0 0 0-3.09-3C4.2 11.8 5.6 10.5 7 10.5c1.6 0 3 1.4 3 3a4.5 4.5 0 0 0 9 0z"></path>
+    <line x1="12" y1="12" x2="12" y2="12.01"></line>
+    <line x1="8" y1="16" x2="8" y2="16.01"></line>
+    <line x1="16" y1="16" x2="16" y2="16.01"></line>
   </svg>
 );

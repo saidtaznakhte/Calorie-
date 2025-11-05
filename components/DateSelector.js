@@ -1,0 +1,69 @@
+
+
+import React from 'react';
+import { toYYYYMMDD, formatDate, isToday as checkIsToday } from '../utils/dateUtils.js';
+import { useAppContext } from '../contexts/AppContext.js';
+
+
+const DateSelector = ({ selectedDate, onDateChange, onDayClick }) => {
+  const { triggerHapticFeedback } = useAppContext();
+  const startOfWeek = new Date(selectedDate);
+  startOfWeek.setDate(selectedDate.getDate() - startOfWeek.getDay()); // Start from Sunday
+
+  const weekDates = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date(startOfWeek);
+    date.setDate(startOfWeek.getDate() + i);
+    return date;
+  });
+
+  const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  const todayYYYYMMDD = toYYYYMMDD(new Date());
+
+  return (
+    React.createElement("div", { className: "flex justify-between items-center" },
+      weekDates.map((date, index) => {
+        const dateYYYYMMDD = toYYYYMMDD(date);
+        const isSelected = dateYYYYMMDD === toYYYYMMDD(selectedDate);
+        const isToday = checkIsToday(date); // Use the utility function to check if it's today
+
+        const handleClick = () => {
+          triggerHapticFeedback();
+          if (onDayClick) {
+            onDayClick(); // Call the onDayClick handler for any day
+          } else {
+            onDateChange(date); // Default handler if onDayClick is not provided
+          }
+        };
+
+        return (
+          React.createElement("button", {
+            key: index,
+            onClick: handleClick,
+            className: `flex flex-col items-center justify-center w-12 h-20 rounded-xl transition-all duration-200 relative group focus:outline-none focus:ring-2 focus:ring-primary/50 transition-transform active:scale-95
+              ${
+                isSelected 
+                  ? 'bg-primary text-white shadow-lg' 
+                  : 'hover:bg-white dark:hover:bg-dark-card'
+              }`,
+            "aria-label": `Select date ${formatDate(date, { weekday: 'long', month: 'long', day: 'numeric' })}`,
+            "aria-current": isSelected ? 'date' : undefined
+          },
+            React.createElement("span", { className: `text-sm font-semibold 
+              ${ isSelected ? 'text-white/80' : 'text-text-light dark:text-dark-text-light'}`
+            },
+              days[index]
+            ),
+            React.createElement("span", { className: `font-bold text-xl mt-1
+              ${ isSelected ? 'text-white' : 'text-text-main dark:text-dark-text-main'}`
+            },
+              date.getDate()
+            ),
+            isToday && React.createElement("div", { className: `absolute bottom-2 w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-secondary'}` })
+          )
+        );
+      })
+    )
+  );
+};
+
+export default DateSelector;

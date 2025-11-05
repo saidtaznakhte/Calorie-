@@ -1,5 +1,5 @@
-
 import React from 'react';
+import { useAppContext } from '../contexts/AppContext';
 
 interface InfoModalProps {
   title: string;
@@ -8,10 +8,16 @@ interface InfoModalProps {
 }
 
 const InfoModal: React.FC<InfoModalProps> = ({ title, onClose, children }) => {
+  const { triggerHapticFeedback } = useAppContext();
+  const handleCloseClick = () => {
+    triggerHapticFeedback();
+    onClose();
+  };
+
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 animate-fade-in"
-      onClick={onClose}
+      onClick={handleCloseClick}
       role="dialog"
       aria-modal="true"
       aria-labelledby="info-modal-title"
@@ -25,8 +31,8 @@ const InfoModal: React.FC<InfoModalProps> = ({ title, onClose, children }) => {
           {children}
         </div>
         <button
-          onClick={onClose}
-          className="w-full bg-primary text-white font-bold py-3 rounded-xl text-lg"
+          onClick={handleCloseClick}
+          className="w-full bg-primary text-white font-bold py-3 rounded-xl text-lg transition-transform active:scale-95"
           aria-label="Close modal"
         >
           Got it

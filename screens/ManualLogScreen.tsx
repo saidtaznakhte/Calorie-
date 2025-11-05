@@ -24,144 +24,121 @@ const InputField: React.FC<{
                 value={value} 
                 onChange={onChange}
                 placeholder={placeholder}
-                className="w-full bg-light-gray dark:bg-dark-border text-text-main dark:text-dark-text-main p-3 rounded-xl border-2 border-transparent focus:border-primary focus:ring-0 outline-none"
-                required
+                className="w-full bg-light-gray dark:bg-dark-border text-text-main dark:text-dark-text-main p-3 rounded-xl border-2 border-transparent focus:border-primary focus:ring-0 outline-none" 
             />
-            {unit && <span className="absolute right-4 top-1/2 -translate-y-1/2 text-text-light dark:text-dark-text-light">{unit}</span>}
+            {unit && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-text-light dark:text-dark-text-light">{unit}</span>}
         </div>
     </div>
 );
 
-
 const ManualLogScreen: React.FC = () => {
-    const { navigateTo, handleMealLogged, showToast } = useAppContext();
-    const [meal, setMeal] = useState({
-        name: '',
-        calories: '',
-        protein: '',
-        carbs: '',
-        fats: '',
-        type: MealType.Snacks,
-    });
-    
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        // Allow only numbers for nutrient fields
-        if (['calories', 'protein', 'carbs', 'fats'].includes(name)) {
-            if (/^\d*\.?\d*$/.test(value)) {
-                 setMeal(prev => ({ ...prev, [name]: value }));
-            }
-        } else {
-             setMeal(prev => ({ ...prev, [name]: value }));
-        }
-    };
+    const { navigateTo, handleMealLogged, showToast, triggerHapticFeedback } = useAppContext();
+    const [mealName, setMealName] = useState('');
+    const [calories, setCalories] = useState('');
+    const [protein, setProtein] = useState('');
+    const [carbs, setCarbs] = useState('');
+    const [fats, setFats] = useState('');
+    const [selectedMealType, setSelectedMealType] = useState<MealType>(MealType.Snacks);
 
-    const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setMeal(prev => ({ ...prev, type: e.target.value as MealType }));
-    };
+    const handleLogMeal = () => {
+        triggerHapticFeedback();
+        const parsedCalories = parseInt(calories);
+        const parsedProtein = parseInt(protein);
+        const parsedCarbs = parseInt(carbs);
+        const parsedFats = parseInt(fats);
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        const { name, calories, protein, carbs, fats, type } = meal;
-        if (!name || !calories || !protein || !carbs || !fats) {
-            alert('Please fill out all fields.');
+        if (!mealName.trim() || isNaN(parsedCalories) || isNaN(parsedProtein) || isNaN(parsedCarbs) || isNaN(parsedFats)) {
+            showToast({ text: "Please fill in all fields with valid numbers.", type: 'error' });
             return;
         }
 
         const newMeal: Meal = {
-            name,
-            calories: parseFloat(calories),
-            protein: parseFloat(protein),
-            carbs: parseFloat(carbs),
-            fats: parseFloat(fats),
-            type,
+            name: mealName.trim(),
+            calories: parsedCalories,
+            protein: parsedProtein,
+            carbs: parsedCarbs,
+            fats: parsedFats,
+            type: selectedMealType,
             date: toYYYYMMDD(new Date()),
         };
-        
+
         handleMealLogged(newMeal);
-        showToast({ text: `${newMeal.name} logged!`, type: 'success' }); // Updated call to showToast
+        // The handleMealLogged function already navigates to Dashboard and shows a toast.
     };
 
     return (
         <div className="p-4 flex flex-col h-full bg-background dark:bg-dark-background">
             <header className="flex items-center mb-6">
-                <button onClick={() => navigateTo(Page.LogMeal)} className="p-2 -ml-2">
+                <button onClick={() => { triggerHapticFeedback(); navigateTo(Page.LogMeal); }} className="p-2 -ml-2 transition-transform active:scale-95">
                     <BackIcon className="w-6 h-6 text-text-main dark:text-dark-text-main" />
                 </button>
-                <h1 className="text-xl font-bold text-text-main dark:text-dark-text-main mx-auto font-montserrat">Manual Entry</h1>
+                <h1 className="text-xl font-bold text-text-main dark:text-dark-text-main mx-auto font-montserrat">Manual Log</h1>
                 <div className="w-6"></div>
             </header>
-            
-            <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto">
-                <div className="bg-card dark:bg-dark-card rounded-2xl p-6 shadow-sm space-y-5">
-                    <InputField 
-                        label="Food Name"
-                        name="name"
-                        value={meal.name}
-                        onChange={handleInputChange}
-                        placeholder="e.g., Apple"
-                    />
-                    
-                    <div>
-                        <label htmlFor="type" className="block text-sm font-semibold text-text-light dark:text-dark-text-light mb-2 font-montserrat">Meal</label>
-                        <select 
-                            id="type" 
-                            name="type" 
-                            value={meal.type} 
-                            onChange={handleSelectChange} 
-                            className="w-full bg-light-gray dark:bg-dark-border text-text-main dark:text-dark-text-main p-3 rounded-xl border-2 border-transparent focus:border-primary focus:ring-0 outline-none"
-                        >
-                            {Object.values(MealType).map(type => <option key={type} value={type}>{type}</option>)}
-                        </select>
-                    </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <InputField 
-                            label="Calories"
-                            name="calories"
-                            value={meal.calories}
-                            onChange={handleInputChange}
-                            type="number"
-                            placeholder="0"
-                            unit="kcal"
-                        />
-                         <InputField 
-                            label="Protein"
-                            name="protein"
-                            value={meal.protein}
-                            onChange={handleInputChange}
-                            type="number"
-                            placeholder="0"
-                            unit="g"
-                        />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <InputField 
-                            label="Carbs"
-                            name="carbs"
-                            value={meal.carbs}
-                            onChange={handleInputChange}
-                            type="number"
-                            placeholder="0"
-                            unit="g"
-                        />
-                         <InputField 
-                            label="Fats"
-                            name="fats"
-                            value={meal.fats}
-                            onChange={handleInputChange}
-                            type="number"
-                            placeholder="0"
-                            unit="g"
-                        />
-                    </div>
+            <div className="flex-1 overflow-y-auto bg-card dark:bg-dark-card rounded-2xl p-6 shadow-sm space-y-5">
+                <div>
+                    <label htmlFor="mealType" className="block text-sm font-semibold text-text-light dark:text-dark-text-light mb-2 font-montserrat">Meal Type</label>
+                    <select 
+                        id="mealType" 
+                        value={selectedMealType} 
+                        onChange={(e) => setSelectedMealType(e.target.value as MealType)} 
+                        className="w-full bg-light-gray dark:bg-dark-border text-text-main dark:text-dark-text-main p-3 rounded-xl border-2 border-transparent focus:border-primary focus:ring-0 outline-none"
+                    >
+                        {Object.values(MealType).map(type => <option key={type} value={type}>{type}</option>)}
+                    </select>
                 </div>
-            </form>
-            
+                <InputField 
+                    label="Meal Name"
+                    name="mealName"
+                    value={mealName}
+                    onChange={(e) => setMealName(e.target.value)}
+                    placeholder="e.g., Homemade Pasta"
+                />
+                <InputField 
+                    label="Calories"
+                    name="calories"
+                    type="number"
+                    value={calories}
+                    onChange={(e) => setCalories(e.target.value)}
+                    unit="kcal"
+                    placeholder="e.g., 500"
+                />
+                <div className="grid grid-cols-3 gap-4">
+                    <InputField 
+                        label="Protein"
+                        name="protein"
+                        type="number"
+                        value={protein}
+                        onChange={(e) => setProtein(e.target.value)}
+                        unit="g"
+                        placeholder="e.g., 30"
+                    />
+                    <InputField 
+                        label="Carbs"
+                        name="carbs"
+                        type="number"
+                        value={carbs}
+                        onChange={(e) => setCarbs(e.target.value)}
+                        unit="g"
+                        placeholder="e.g., 60"
+                    />
+                    <InputField 
+                        label="Fats"
+                        name="fats"
+                        type="number"
+                        value={fats}
+                        onChange={(e) => setFats(e.target.value)}
+                        unit="g"
+                        placeholder="e.g., 20"
+                    />
+                </div>
+            </div>
+
             <div className="mt-6">
                 <button 
-                    onClick={handleSubmit} 
-                    className="w-full bg-primary text-white font-bold py-4 rounded-xl text-lg shadow-md hover:bg-primary/90 transition-colors"
+                    onClick={handleLogMeal} 
+                    className="w-full bg-primary text-white font-bold py-4 rounded-xl text-lg shadow-md hover:bg-primary/90 transition-colors transition-transform active:scale-95"
                 >
                     Log Meal
                 </button>
@@ -171,4 +148,3 @@ const ManualLogScreen: React.FC = () => {
 };
 
 export default ManualLogScreen;
-    

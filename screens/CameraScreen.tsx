@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { Page, Meal, MealAnalysis } from '../types';
 import { analyzeMealPhoto } from '../services/geminiService';
@@ -29,64 +28,67 @@ const AnalysisResultOverlay: React.FC<{
     image: string;
     onLog: () => void;
     onRetake: () => void;
-}> = ({ result, image, onLog, onRetake }) => (
-    <div className="absolute inset-0 bg-white dark:bg-gray-900 z-30 flex flex-col animate-slide-in-up">
-        <header className="p-4 flex items-center">
-            <button onClick={onRetake} className="p-2 -ml-2">
-                <BackIcon className="w-6 h-6 text-text-main dark:text-gray-100" />
-            </button>
-            <h1 className="text-xl font-bold text-text-main dark:text-gray-100 mx-auto font-montserrat">Analysis Complete</h1>
-            <div className="w-6"></div>
-        </header>
-        <div className="flex-1 overflow-y-auto px-4 pb-4">
-            <img src={image} alt="Captured meal" className="w-full h-48 object-cover rounded-2xl mb-4" />
-            
-            <h2 className="text-2xl font-bold text-text-main dark:text-gray-50 mb-1 font-montserrat">{result.name}</h2>
-            <p className="text-5xl font-extrabold text-primary mb-4">{result.calories} <span className="text-2xl font-semibold text-text-light dark:text-gray-400">cal</span></p>
+}> = ({ result, image, onLog, onRetake }) => {
+    const { triggerHapticFeedback } = useAppContext();
+    return (
+        <div className="absolute inset-0 bg-white dark:bg-gray-900 z-30 flex flex-col animate-slide-in-up">
+            <header className="p-4 flex items-center">
+                <button onClick={() => { triggerHapticFeedback(); onRetake(); }} className="p-2 -ml-2 transition-transform active:scale-95">
+                    <BackIcon className="w-6 h-6 text-text-main dark:text-gray-100" />
+                </button>
+                <h1 className="text-xl font-bold text-text-main dark:text-gray-100 mx-auto font-montserrat">Analysis Complete</h1>
+                <div className="w-6"></div>
+            </header>
+            <div className="flex-1 overflow-y-auto px-4 pb-4">
+                <img src={image} alt="Captured meal" className="w-full h-48 object-cover rounded-2xl mb-4" />
+                
+                <h2 className="text-2xl font-bold text-text-main dark:text-gray-50 mb-1 font-montserrat">{result.name}</h2>
+                <p className="text-5xl font-extrabold text-primary mb-4">{result.calories} <span className="text-2xl font-semibold text-text-light dark:text-gray-400">cal</span></p>
 
-            <div className="grid grid-cols-3 gap-3 mb-4">
-                <NutrientPill label="Protein" value={result.protein} unit="grams" color="text-protein" />
-                <NutrientPill label="Carbs" value={result.carbs} unit="grams" color="text-carbs" />
-                <NutrientPill label="Fats" value={result.fats} unit="grams" color="text-fats" />
-            </div>
-
-            {result.portionSuggestion && (
-                 <div className="bg-primary-light dark:bg-primary/20 p-4 rounded-xl mb-4">
-                    <h3 className="font-bold text-primary mb-1 text-sm font-montserrat">💡 Portion Suggestion</h3>
-                    <p className="text-sm text-text-main dark:text-gray-200">{result.portionSuggestion}</p>
+                <div className="grid grid-cols-3 gap-3 mb-4">
+                    <NutrientPill label="Protein" value={result.protein} unit="grams" color="text-protein" />
+                    <NutrientPill label="Carbs" value={result.carbs} unit="grams" color="text-carbs" />
+                    <NutrientPill label="Fats" value={result.fats} unit="grams" color="text-fats" />
                 </div>
-            )}
-            
-            <div className="bg-light-gray dark:bg-gray-800 p-4 rounded-xl">
-                 <h3 className="font-bold text-text-main dark:text-gray-200 mb-2 text-sm font-montserrat">Detailed Breakdown</h3>
-                 <div className="grid grid-cols-3 gap-x-4 text-center">
-                     <div>
-                         <p className="font-semibold dark:text-gray-50">{result.fiber ?? 'N/A'}</p>
-                         <p className="text-xs text-text-light dark:text-gray-400">Fiber (g)</p>
-                     </div>
-                     <div>
-                         <p className="font-semibold dark:text-gray-50">{result.sugar ?? 'N/A'}</p>
-                         <p className="text-xs text-text-light dark:text-gray-400">Sugar (g)</p>
-                     </div>
-                     <div>
-                         <p className="font-semibold dark:text-gray-50">{result.sodium ?? 'N/A'}</p>
-                         <p className="text-xs text-text-light dark:text-gray-400">Sodium (mg)</p>
-                     </div>
-                 </div>
+
+                {result.portionSuggestion && (
+                    <div className="bg-primary-light dark:bg-primary/20 p-4 rounded-xl mb-4">
+                        <h3 className="font-bold text-primary mb-1 text-sm font-montserrat">💡 Portion Suggestion</h3>
+                        <p className="text-sm text-text-main dark:text-gray-200">{result.portionSuggestion}</p>
+                    </div>
+                )}
+                
+                <div className="bg-light-gray dark:bg-gray-800 p-4 rounded-xl">
+                    <h3 className="font-bold text-text-main dark:text-gray-200 mb-2 text-sm font-montserrat">Detailed Breakdown</h3>
+                    <div className="grid grid-cols-3 gap-x-4 text-center">
+                        <div>
+                            <p className="font-semibold dark:text-gray-50">{result.fiber ?? 'N/A'}</p>
+                            <p className="text-xs text-text-light dark:text-gray-400">Fiber (g)</p>
+                        </div>
+                        <div>
+                            <p className="font-semibold dark:text-gray-50">{result.sugar ?? 'N/A'}</p>
+                            <p className="text-xs text-text-light dark:text-gray-400">Sugar (g)</p>
+                        </div>
+                        <div>
+                            <p className="font-semibold dark:text-gray-50">{result.sodium ?? 'N/A'}</p>
+                            <p className="text-xs text-text-light dark:text-gray-400">Sodium (mg)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="p-4 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+                <button onClick={() => { triggerHapticFeedback(); onLog(); }} className="w-full bg-primary text-white font-bold py-4 rounded-xl text-lg transition-transform active:scale-95">
+                    Log Meal
+                </button>
             </div>
         </div>
-
-        <div className="p-4 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-            <button onClick={onLog} className="w-full bg-primary text-white font-bold py-4 rounded-xl text-lg">
-                Log Meal
-            </button>
-        </div>
-    </div>
-);
+    );
+};
 
 
 const CameraScreen: React.FC = () => {
-  const { handleMealLogged: onMealLogged, navigateTo } = useAppContext();
+  const { handleMealLogged: onMealLogged, navigateTo, triggerHapticFeedback } = useAppContext();
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
@@ -169,6 +171,7 @@ const CameraScreen: React.FC = () => {
 
   const capturePhoto = useCallback(async () => {
     if (!videoRef.current || !canvasRef.current) return;
+    triggerHapticFeedback();
     setIsLoading(true);
     setError(null);
 
@@ -197,7 +200,7 @@ const CameraScreen: React.FC = () => {
     } finally {
         setIsLoading(false);
     }
-  }, [stream]);
+  }, [stream, triggerHapticFeedback]);
   
   const handleLogMeal = () => {
       if (analysisResult) {
@@ -223,6 +226,7 @@ const CameraScreen: React.FC = () => {
   };
 
   const handleGrantAccess = () => {
+      triggerHapticFeedback();
       startCamera();
   };
 
@@ -237,7 +241,7 @@ const CameraScreen: React.FC = () => {
       {error && !analysisResult && (
         <div className="absolute top-10 left-4 right-4 bg-red-500 p-3 rounded-lg z-20 text-center">
             <p>{error}</p>
-            <button onClick={() => navigateTo(Page.LogMeal)} className="font-bold mt-2 underline">Go Back</button>
+            <button onClick={() => { triggerHapticFeedback(); navigateTo(Page.LogMeal); }} className="font-bold mt-2 underline transition-transform active:scale-95">Go Back</button>
         </div>
       )}
       
@@ -259,7 +263,7 @@ const CameraScreen: React.FC = () => {
       {permissionStatus === 'prompt' && !analysisResult && (
           <RequestCameraAccess
               onGrant={handleGrantAccess}
-              onDeny={() => navigateTo(Page.LogMeal)}
+              onDeny={() => { triggerHapticFeedback(); navigateTo(Page.LogMeal); }}
               featureName="Meal Snapping"
               featureDescription="Snap a photo of your food for instant nutritional analysis. We need camera access to see your meal."
           />
@@ -267,7 +271,7 @@ const CameraScreen: React.FC = () => {
 
       {permissionStatus === 'denied' && !analysisResult && (
           <PermissionDenied
-              onGoBack={() => navigateTo(Page.LogMeal)}
+              onGoBack={() => { triggerHapticFeedback(); navigateTo(Page.LogMeal); }}
               featureName="Meal Snapping"
           />
       )}
@@ -276,7 +280,7 @@ const CameraScreen: React.FC = () => {
           <>
             <video ref={videoRef} autoPlay playsInline muted className={`w-full h-full object-cover animate-fade-in`} />
             <div className="absolute inset-0 flex flex-col items-center justify-between p-8">
-              <button onClick={() => navigateTo(Page.LogMeal)} className="self-start p-2 bg-black bg-opacity-40 rounded-full">
+              <button onClick={() => { triggerHapticFeedback(); navigateTo(Page.LogMeal); }} className="self-start p-2 bg-black bg-opacity-40 rounded-full transition-transform active:scale-95">
                   <BackIcon className="w-6 h-6 text-white"/>
               </button>
               <div className="w-full h-2/3 border-2 border-dashed border-white border-opacity-70 rounded-3xl flex items-center justify-center">
@@ -288,7 +292,7 @@ const CameraScreen: React.FC = () => {
                   <button
                       onClick={capturePhoto}
                       disabled={isLoading}
-                      className="w-20 h-20 bg-white rounded-full flex items-center justify-center border-4 border-gray-300 transition-transform hover:scale-105 disabled:opacity-50"
+                      className="w-20 h-20 bg-white rounded-full flex items-center justify-center border-4 border-gray-300 transition-transform hover:scale-105 active:scale-95 disabled:opacity-50"
                   >
                       <div className="w-16 h-16 bg-white rounded-full border-2 border-primary ring-2 ring-white"></div>
                   </button>

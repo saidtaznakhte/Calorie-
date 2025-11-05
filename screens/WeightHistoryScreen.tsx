@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Page, Theme } from '../types';
 import { BackIcon } from '../components/Icons';
@@ -8,7 +7,7 @@ import { useAppContext } from '../contexts/AppContext';
 import { getDisplayWeight, formatWeight } from '../utils/units';
 
 const WeightHistoryScreen: React.FC = () => {
-    const { navigateTo, weightHistory: history, theme, profile } = useAppContext();
+    const { navigateTo, weightHistory: history, theme, profile, triggerHapticFeedback } = useAppContext();
     const { unitSystem } = profile;
     const isMetric = unitSystem === 'metric';
 
@@ -36,7 +35,7 @@ const WeightHistoryScreen: React.FC = () => {
     return (
         <div className="p-4 flex flex-col h-full bg-background dark:bg-dark-background">
             <header className="flex items-center mb-6">
-                <button onClick={() => navigateTo(Page.Settings)} className="p-2 -ml-2">
+                <button onClick={() => { triggerHapticFeedback(); navigateTo(Page.Settings); }} className="p-2 -ml-2 transition-transform active:scale-95">
                     <BackIcon className="w-6 h-6 text-text-main dark:text-dark-text-main" />
                 </button>
                 <h1 className="text-xl font-bold text-text-main dark:text-dark-text-main mx-auto font-montserrat">Weight History</h1>
